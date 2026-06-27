@@ -8,7 +8,6 @@ function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [zoom, setZoom] = useState(5);
   const [shapes, setShapes] = useState(initialShapes);
-  const [camera, setCamera] = useState({ x: 0, y: 0 });
 
   const selectedShape = shapes.find((s) => s.id === selectedId) ?? null;
 
@@ -17,7 +16,6 @@ function App() {
       <TopBar setZoom={setZoom} />
       {/* MAIN AREA */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {/* LEFT PANEL */}
         {/* CANVAS */}
         <div style={{ flex: 1 }}>
           <LayoutCanvas

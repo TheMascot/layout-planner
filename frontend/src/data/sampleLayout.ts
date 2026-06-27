@@ -27,4 +27,14 @@ export const shapes: Shape[] = [
     height: 53,
     rotation: 0,
   },
+  {
+    id: '3',
+    name: 'C-172',
+    type: 'aircraft',
+    posX: 100,
+    posY: 20,
+    width: 15,
+    height: 12,
+    rotation: 0,
+  },
 ];

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Shape, Surface } from '../types/shapes';
+import checkOverlapping from '../calculations/Overlap';
 
 interface Props {
   surface: Surface;
@@ -22,6 +23,7 @@ export default function LayoutCanvas({
 }: Props) {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const conflictIds = new Set<string>();
 
   function getMousePosition(svg: SVGSVGElement, event: React.MouseEvent) {
     const rect = svg.getBoundingClientRect();
@@ -35,7 +37,11 @@ export default function LayoutCanvas({
     };
   }
 
-  function handleMouseMove(e: React.MouseEvent<SVGSVGElement>) {
+  function clamp(value: number, min: number, max: number) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function handleMouseDragItem(e: React.MouseEvent<SVGSVGElement>) {
     if (!draggingId) return;
 
     const svg = e.currentTarget;
@@ -46,8 +52,8 @@ export default function LayoutCanvas({
         s.id === draggingId
           ? {
               ...s,
-              posX: mouse.x - offset.x,
-              posY: mouse.y - offset.y,
+              posX: clamp(mouse.x - offset.x, 0, surface.width - s.width),
+              posY: clamp(mouse.y - offset.y, 0, surface.height - s.height),
             }
           : s,
       ),
@@ -62,64 +68,89 @@ export default function LayoutCanvas({
     });
   }
 
+  function handleMouseDown(e: React.MouseEvent) {
+    if (e.target === e.currentTarget) {
+      onSelect(null);
+    }
+  }
+
+  function handleMouseUp() {
+    setDraggingId(null);
+  }
+
+  checkOverlapping(shapes, conflictIds);
+
   return (
     <>
-      <svg
-        viewBox={`0 0 ${surface.width} ${surface.height}`}
+      <div
         style={{
-          width: surface.width * zoom,
-          height: surface.height * zoom,
-          border: '1px solid red',
-        }}
-        onMouseMove={(e) => {
-          handleMouseMove(e);
-        }}
-        onMouseDown={(e) => {
-          if (e.target === e.currentTarget) {
-            onSelect(null);
-          }
-        }}
-        onMouseLeave={() => {
-          setDraggingId(null);
-        }}
-        onMouseUp={() => {
-          setDraggingId(null);
-        }}
-        onWheel={(e) => {
-          handleCanvasWheel(e);
+          width: '100%',
+          height: '100%',
+          overflow: 'auto',
+          border: '1px solid black',
         }}
       >
-        {shapes.map((shape) => (
-          <rect
-            key={shape.id}
-            x={shape.posX}
-            y={shape.posY}
-            width={shape.width}
-            height={shape.height}
-            fill={shape.id === selectedId ? 'orange' : 'steelblue'}
-            stroke={shape.id === selectedId ? 'blue' : 'black'}
-            strokeWidth={1}
-            style={{ cursor: 'grab', boxSizing: 'border-box' }}
-            onMouseDown={(e) => {
-              e.stopPropagation();
+        <svg
+          viewBox={`0 0 ${surface.width} ${surface.height}`}
+          style={{
+            width: surface.width * zoom,
+            height: surface.height * zoom,
+            border: '1px solid red',
+          }}
+          onMouseMove={(e) => {
+            handleMouseDragItem(e);
+          }}
+          onMouseDown={(e) => {
+            handleMouseDown(e);
+          }}
+          onMouseLeave={() => {
+            setDraggingId(null);
+          }}
+          onMouseUp={() => handleMouseUp()}
+          onWheel={(e) => {
+            handleCanvasWheel(e);
+          }}
+        >
+          {shapes.map((shape) => (
+            <rect
+              key={shape.id}
+              x={shape.posX}
+              y={shape.posY}
+              width={shape.width}
+              height={shape.height}
+              fill={
+                shape.id === selectedId
+                  ? 'orange'
+                  : conflictIds.has(shape.id)
+                    ? '#ff4d4d'
+                    : 'steelblue'
+              }
+              stroke={
+                shape.id === selectedId ? 'blue' : conflictIds.has(shape.id) ? 'darkred' : 'black'
+              }
+              strokeWidth={1}
+              style={{ cursor: 'grab', boxSizing: 'border-box' }}
+              onMouseDown={(e) => {
+                e.stopPropagation();
 
-              const svg = e.currentTarget.ownerSVGElement!;
-              const mouse = getMousePosition(svg, e);
+                const svg = e.currentTarget.ownerSVGElement!;
+                const mouse = getMousePosition(svg, e);
 
-              onSelect(shape.id);
-              setDraggingId(shape.id);
+                onSelect(shape.id);
+                setDraggingId(shape.id);
 
-              setOffset({
-                x: mouse.x - shape.posX,
-                y: mouse.y - shape.posY,
-              });
-            }}
-            onMouseUp={() => {
-              setDraggingId(null);
-            }}
-          />
-        ))}
-      </svg>
+                setOffset({
+                  x: mouse.x - shape.posX,
+                  y: mouse.y - shape.posY,
+                });
+              }}
+              onMouseUp={() => {
+                setDraggingId(null);
+              }}
+            />
+          ))}
+        </svg>
+      </div>
       <footer></footer>
     </>
   );
