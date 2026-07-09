@@ -16,6 +16,8 @@ export interface RectangleShape {
   height: number;
 
   rotation: number;
+
+  safetyDistance: number;
 }
 
 export type Shape = RectangleShape;

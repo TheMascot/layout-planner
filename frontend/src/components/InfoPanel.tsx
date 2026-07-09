@@ -53,6 +53,9 @@ export default function InfoPanel({ selectedShape }: Props) {
               <span>
                 <b>Rotation:</b> {selectedShape.rotation ?? 0} deg
               </span>
+              <span>
+                <b>Safety zone:</b> {selectedShape.safetyDistance ?? 0} m
+              </span>
             </div>
           ) : (
             <div style={{ opacity: 0.6 }}>Nothing is selected</div>

@@ -3,6 +3,7 @@ import type { Shape, Surface } from '../types/shapes';
 import checkOverlapping from '../calculations/Overlap';
 import type { VisualSettings } from '../types/settings';
 import Grid from './Grid';
+import SafetyZone from './SafetyZone';
 
 interface Props {
   surface: Surface;
@@ -126,6 +127,17 @@ export default function LayoutCanvas({
         >
           {/* Grid */}
           {settings.showGrid && <Grid surface={surface} gridSize={settings.gridSize} />}
+          {/* Safety Zones */}
+          {shapes.map((shape) => (
+            <SafetyZone
+              key={`${shape.id}-safety`}
+              x={shape.posX}
+              y={shape.posY}
+              width={shape.width}
+              height={shape.height}
+              distance={shape.safetyDistance}
+            />
+          ))}
           {/* Objects */}
           {shapes.map((shape) => (
             <rect

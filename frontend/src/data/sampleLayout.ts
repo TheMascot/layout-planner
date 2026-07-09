@@ -16,6 +16,7 @@ export const shapes: Shape[] = [
     width: 8.4,
     height: 14.1,
     rotation: 0,
+    safetyDistance: 5,
   },
   {
     id: '2',
@@ -26,6 +27,7 @@ export const shapes: Shape[] = [
     width: 51.75,
     height: 53,
     rotation: 0,
+    safetyDistance: 5,
   },
   {
     id: '3',
@@ -36,5 +38,6 @@ export const shapes: Shape[] = [
     width: 15,
     height: 12,
     rotation: 0,
+    safetyDistance: 5,
   },
 ];
