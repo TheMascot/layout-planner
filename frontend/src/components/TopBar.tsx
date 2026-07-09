@@ -1,9 +1,10 @@
 interface TopBarProps {
   setZoom: React.Dispatch<React.SetStateAction<number>>;
   onToggleGrid: () => void;
+  onToggleSnap: () => void;
 }
 
-export default function TopBar({ setZoom, onToggleGrid }: TopBarProps) {
+export default function TopBar({ setZoom, onToggleGrid, onToggleSnap }: TopBarProps) {
   return (
     <div
       style={{
@@ -18,6 +19,7 @@ export default function TopBar({ setZoom, onToggleGrid }: TopBarProps) {
       <button>Load</button>
       <button>Save</button>
       <button onClick={onToggleGrid}>Grid</button>
+      <button onClick={onToggleSnap}>Snap</button>
       <button>Settings</button>
       <button onClick={() => setZoom((z) => z + 0.1)}>+</button>
       <button onClick={() => setZoom((z) => z - 0.1)}>-</button>

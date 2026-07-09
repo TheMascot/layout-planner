@@ -45,6 +45,10 @@ export default function LayoutCanvas({
     return Math.max(min, Math.min(max, value));
   }
 
+  function snap(value: number, gridSize: number) {
+    return Math.round(value / gridSize) * gridSize;
+  }
+
   function handleMouseDragItem(e: React.MouseEvent<SVGSVGElement>) {
     if (!draggingId) return;
 
@@ -52,15 +56,23 @@ export default function LayoutCanvas({
     const mouse = getMousePosition(svg, e);
 
     setShapes((prev) =>
-      prev.map((s) =>
-        s.id === draggingId
-          ? {
-              ...s,
-              posX: clamp(mouse.x - offset.x, 0, surface.width - s.width),
-              posY: clamp(mouse.y - offset.y, 0, surface.height - s.height),
-            }
-          : s,
-      ),
+      prev.map((s) => {
+        if (s.id !== draggingId) return s;
+
+        let newX = mouse.x - offset.x;
+        let newY = mouse.y - offset.y;
+
+        if (settings.snapToGrid) {
+          newX = snap(newX, settings.gridSize);
+          newY = snap(newY, settings.gridSize);
+        }
+
+        return {
+          ...s,
+          posX: clamp(newX, 0, surface.width - s.width),
+          posY: clamp(newY, 0, surface.height - s.height),
+        };
+      }),
     );
   }
 

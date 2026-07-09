@@ -12,22 +12,27 @@ function App() {
   const [settings, setSettings] = useState<VisualSettings>({
     showGrid: true,
     gridSize: 1,
-    snapToGrid: false,
+    snapToGrid: true,
   });
 
   const selectedShape = shapes.find((s) => s.id === selectedId) ?? null;
 
   function handleToggleGrid() {
     setSettings((currentSettings) => ({
+      ...currentSettings,
       showGrid: !currentSettings.showGrid,
-      gridSize: currentSettings.gridSize,
-      snapToGrid: currentSettings.snapToGrid,
+    }));
+  }
+  function handleToggleSnap() {
+    setSettings((currentSettings) => ({
+      ...currentSettings,
+      snapToGrid: !currentSettings.snapToGrid,
     }));
   }
 
   return (
     <div style={{ height: '95vh', display: 'flex', flexDirection: 'column' }}>
-      <TopBar setZoom={setZoom} onToggleGrid={handleToggleGrid} />
+      <TopBar setZoom={setZoom} onToggleGrid={handleToggleGrid} onToggleSnap={handleToggleSnap} />
       {/* MAIN AREA */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* CANVAS */}

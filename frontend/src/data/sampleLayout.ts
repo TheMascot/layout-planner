@@ -13,8 +13,8 @@ export const shapes: Shape[] = [
     type: 'rectangle',
     posX: 0,
     posY: 0,
-    width: 30,
-    height: 30,
+    width: 8.4,
+    height: 14.1,
     rotation: 0,
   },
   {
