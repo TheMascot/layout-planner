@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import type { Shape, Surface } from '../types/shapes';
 import checkOverlapping from '../calculations/Overlap';
+import type { VisualSettings } from '../types/settings';
+import Grid from './Grid';
 
 interface Props {
   surface: Surface;
@@ -10,6 +12,7 @@ interface Props {
   setZoom: React.Dispatch<React.SetStateAction<number>>;
   shapes: Shape[];
   setShapes: React.Dispatch<React.SetStateAction<Shape[]>>;
+  settings: VisualSettings;
 }
 
 export default function LayoutCanvas({
@@ -20,6 +23,7 @@ export default function LayoutCanvas({
   setZoom,
   shapes,
   setShapes,
+  settings,
 }: Props) {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -61,17 +65,14 @@ export default function LayoutCanvas({
   }
 
   function handleCanvasWheel(e: React.WheelEvent<SVGSVGElement>) {
-    e.preventDefault();
     setZoom((z) => {
       const next = z - e.deltaY * 0.005;
       return Math.max(0.5, Math.min(5, next));
     });
   }
 
-  function handleMouseDown(e: React.MouseEvent) {
-    if (e.target === e.currentTarget) {
-      onSelect(null);
-    }
+  function handleBackgroundClick() {
+    onSelect(null);
   }
 
   function handleMouseUp() {
@@ -100,8 +101,8 @@ export default function LayoutCanvas({
           onMouseMove={(e) => {
             handleMouseDragItem(e);
           }}
-          onMouseDown={(e) => {
-            handleMouseDown(e);
+          onMouseDown={() => {
+            handleBackgroundClick();
           }}
           onMouseLeave={() => {
             setDraggingId(null);
@@ -111,6 +112,9 @@ export default function LayoutCanvas({
             handleCanvasWheel(e);
           }}
         >
+          {/* Grid */}
+          {settings.showGrid && <Grid surface={surface} gridSize={settings.gridSize} />}
+          {/* Objects */}
           {shapes.map((shape) => (
             <rect
               key={shape.id}
@@ -124,9 +128,6 @@ export default function LayoutCanvas({
                   : conflictIds.has(shape.id)
                     ? '#ff4d4d'
                     : 'steelblue'
-              }
-              stroke={
-                shape.id === selectedId ? 'blue' : conflictIds.has(shape.id) ? 'darkred' : 'black'
               }
               strokeWidth={1}
               style={{ cursor: 'grab', boxSizing: 'border-box' }}

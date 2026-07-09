@@ -3,22 +3,37 @@ import LayoutCanvas from './components/LayoutCanvas';
 import { surface as initialSurface, shapes as initialShapes } from './data/sampleLayout';
 import TopBar from './components/TopBar';
 import InfoPanel from './components/InfoPanel';
+import type { VisualSettings } from './types/settings';
 
 function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [zoom, setZoom] = useState(5);
   const [shapes, setShapes] = useState(initialShapes);
+  const [settings, setSettings] = useState<VisualSettings>({
+    showGrid: true,
+    gridSize: 1,
+    snapToGrid: false,
+  });
 
   const selectedShape = shapes.find((s) => s.id === selectedId) ?? null;
 
+  function handleToggleGrid() {
+    setSettings((currentSettings) => ({
+      showGrid: !currentSettings.showGrid,
+      gridSize: currentSettings.gridSize,
+      snapToGrid: currentSettings.snapToGrid,
+    }));
+  }
+
   return (
     <div style={{ height: '95vh', display: 'flex', flexDirection: 'column' }}>
-      <TopBar setZoom={setZoom} />
+      <TopBar setZoom={setZoom} onToggleGrid={handleToggleGrid} />
       {/* MAIN AREA */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* CANVAS */}
         <div style={{ flex: 1 }}>
           <LayoutCanvas
+            settings={settings}
             surface={initialSurface}
             shapes={shapes}
             setShapes={setShapes}

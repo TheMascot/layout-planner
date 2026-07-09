@@ -12,8 +12,7 @@ export default function InfoPanel({ selectedShape }: Props) {
     <div
       style={{
         height: open ? 30 : 0,
-        borderTop: '1px solid #ccc',
-        background: '#f8f8f8',
+        padding: '5px',
         display: 'flex',
         flexDirection: 'column',
         transition: 'height 0.2s',
