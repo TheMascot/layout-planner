@@ -1,10 +1,20 @@
+import type { ToolMode } from '../types/tools';
+
 interface TopBarProps {
   setZoom: React.Dispatch<React.SetStateAction<number>>;
   onToggleGrid: () => void;
   onToggleSnap: () => void;
+  onChangeActiveTool: () => void;
+  activeTool: ToolMode;
 }
 
-export default function TopBar({ setZoom, onToggleGrid, onToggleSnap }: TopBarProps) {
+export default function TopBar({
+  setZoom,
+  onToggleGrid,
+  onToggleSnap,
+  onChangeActiveTool,
+  activeTool,
+}: TopBarProps) {
   return (
     <div
       style={{
@@ -20,6 +30,7 @@ export default function TopBar({ setZoom, onToggleGrid, onToggleSnap }: TopBarPr
       <button>Save</button>
       <button onClick={onToggleGrid}>Grid</button>
       <button onClick={onToggleSnap}>Snap</button>
+      <button onClick={onChangeActiveTool}>{activeTool}</button>
       <button>Settings</button>
       <button onClick={() => setZoom((z) => z + 0.1)}>+</button>
       <button onClick={() => setZoom((z) => z - 0.1)}>-</button>

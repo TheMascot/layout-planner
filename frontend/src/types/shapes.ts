@@ -20,4 +20,9 @@ export interface RectangleShape {
   safetyDistance: number;
 }
 
+export interface Point {
+  x: number;
+  y: number;
+}
+
 export type Shape = RectangleShape;

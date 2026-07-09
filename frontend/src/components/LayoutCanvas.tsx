@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import type { Shape, Surface } from '../types/shapes';
+import type { Point, Shape, Surface } from '../types/shapes';
 import checkOverlapping from '../calculations/Overlap';
 import type { VisualSettings } from '../types/settings';
 import Grid from './Grid';
 import SafetyZone from './SafetyZone';
+import type { ToolMode } from '../types/tools';
+import calculateDistance from '../calculations/CalculateDistance';
 
 interface Props {
   surface: Surface;
@@ -14,6 +16,7 @@ interface Props {
   shapes: Shape[];
   setShapes: React.Dispatch<React.SetStateAction<Shape[]>>;
   settings: VisualSettings;
+  activeTool: ToolMode;
 }
 
 export default function LayoutCanvas({
@@ -25,9 +28,12 @@ export default function LayoutCanvas({
   shapes,
   setShapes,
   settings,
+  activeTool,
 }: Props) {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [measureStart, setMeasureStart] = useState<Point | null>(null);
+  const [measureEnd, setMeasureEnd] = useState<Point | null>(null);
   const conflictIds = new Set<string>();
 
   function getMousePosition(svg: SVGSVGElement, event: React.MouseEvent) {
@@ -51,7 +57,7 @@ export default function LayoutCanvas({
   }
 
   function handleMouseDragItem(e: React.MouseEvent<SVGSVGElement>) {
-    if (!draggingId) return;
+    if (!draggingId || activeTool !== 'Select') return;
 
     const svg = e.currentTarget;
     const mouse = getMousePosition(svg, e);
@@ -85,11 +91,40 @@ export default function LayoutCanvas({
   }
 
   function handleBackgroundClick() {
-    onSelect(null);
+    if (activeTool === 'Select') {
+      onSelect(null);
+    }
   }
 
   function handleMouseUp() {
     setDraggingId(null);
+  }
+
+  function handleMeasureClick(point: Point) {
+    if (measureStart && measureEnd) {
+      setMeasureEnd(null);
+      setMeasureStart(null);
+      return;
+    }
+    if (measureStart && !measureEnd) {
+      setMeasureEnd(point);
+      return;
+    }
+    if (!measureStart && !measureEnd) {
+      setMeasureStart(point);
+      return;
+    }
+    // else {
+    //   setMeasureEnd(point);
+    // }
+  }
+
+  function handleMeasureMove(e: React.MouseEvent<SVGSVGElement>) {
+    if (!measureStart) return;
+
+    const point = getMousePosition(e.currentTarget, e);
+
+    setMeasureEnd(point);
   }
 
   checkOverlapping(shapes, conflictIds);
@@ -110,12 +145,32 @@ export default function LayoutCanvas({
             width: surface.width * zoom,
             height: surface.height * zoom,
             border: '1px solid red',
+            cursor: activeTool !== 'Select' ? 'crosshair' : 'auto',
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
           }}
           onMouseMove={(e) => {
-            handleMouseDragItem(e);
+            if (activeTool === 'Measure') {
+              handleMeasureMove(e);
+              return;
+            }
+
+            if (activeTool === 'Select') {
+              handleMouseDragItem(e);
+            }
           }}
-          onMouseDown={() => {
-            handleBackgroundClick();
+          onMouseDown={(e) => {
+            const svg = e.currentTarget;
+            const point = getMousePosition(svg, e);
+
+            if (activeTool === 'Measure' && e.button === 0) {
+              handleMeasureClick(point);
+              return;
+            }
+
+            if (activeTool === 'Select' && e.button === 0) {
+              handleBackgroundClick();
+            }
           }}
           onMouseLeave={() => {
             setDraggingId(null);
@@ -154,26 +209,53 @@ export default function LayoutCanvas({
                     : 'steelblue'
               }
               strokeWidth={1}
-              style={{ cursor: 'grab', boxSizing: 'border-box' }}
+              style={{ cursor: activeTool === 'Select' ? 'grab' : 'auto' }}
               onMouseDown={(e) => {
                 e.stopPropagation();
+                if (activeTool !== 'Select') return;
+                if (e.button === 0) {
+                  const svg = e.currentTarget.ownerSVGElement!;
+                  const mouse = getMousePosition(svg, e);
 
-                const svg = e.currentTarget.ownerSVGElement!;
-                const mouse = getMousePosition(svg, e);
+                  onSelect(shape.id);
+                  setDraggingId(shape.id);
 
-                onSelect(shape.id);
-                setDraggingId(shape.id);
-
-                setOffset({
-                  x: mouse.x - shape.posX,
-                  y: mouse.y - shape.posY,
-                });
+                  setOffset({
+                    x: mouse.x - shape.posX,
+                    y: mouse.y - shape.posY,
+                  });
+                }
               }}
               onMouseUp={() => {
                 setDraggingId(null);
               }}
             />
           ))}
+          {/* Measuring line and text */}
+          {activeTool === 'Measure' && measureStart && (
+            <line
+              x1={measureStart.x}
+              y1={measureStart.y}
+              x2={measureEnd?.x ?? measureStart.x}
+              y2={measureEnd?.y ?? measureStart.y}
+              stroke="red"
+              strokeWidth={0.2}
+              strokeDasharray="1 1"
+              pointerEvents="none"
+            />
+          )}
+          {activeTool === 'Measure' && measureStart && measureEnd && (
+            <text
+              x={(measureStart.x + measureEnd.x) / 2}
+              y={(measureStart.y + measureEnd.y) / 2}
+              fill="red"
+              fontSize={6}
+              pointerEvents="none"
+              style={{ userSelect: 'none' }}
+            >
+              {calculateDistance(measureStart, measureEnd).toFixed(1)} m
+            </text>
+          )}
         </svg>
       </div>
       <footer></footer>

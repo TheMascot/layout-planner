@@ -4,8 +4,10 @@ import { surface as initialSurface, shapes as initialShapes } from './data/sampl
 import TopBar from './components/TopBar';
 import InfoPanel from './components/InfoPanel';
 import type { VisualSettings } from './types/settings';
+import type { ToolMode } from './types/tools';
 
 function App() {
+  const [activeTool, setActiveTool] = useState<ToolMode>('Select');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [zoom, setZoom] = useState(5);
   const [shapes, setShapes] = useState(initialShapes);
@@ -30,9 +32,26 @@ function App() {
     }));
   }
 
+  function handleChangeActiveTool() {
+    setActiveTool((current) => {
+      if (current === 'Select') {
+        setSelectedId(null);
+        return 'Measure';
+      } else if (current === 'Measure') {
+        return 'Draw';
+      } else return 'Select';
+    });
+  }
+
   return (
     <div style={{ height: '95vh', display: 'flex', flexDirection: 'column' }}>
-      <TopBar setZoom={setZoom} onToggleGrid={handleToggleGrid} onToggleSnap={handleToggleSnap} />
+      <TopBar
+        setZoom={setZoom}
+        onToggleGrid={handleToggleGrid}
+        onToggleSnap={handleToggleSnap}
+        onChangeActiveTool={handleChangeActiveTool}
+        activeTool={activeTool}
+      />
       {/* MAIN AREA */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* CANVAS */}
@@ -46,6 +65,7 @@ function App() {
             onSelect={setSelectedId}
             setZoom={setZoom}
             zoom={zoom}
+            activeTool={activeTool}
           />
         </div>
         <InfoPanel selectedShape={selectedShape} />
