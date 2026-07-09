@@ -77,7 +77,7 @@ export default function LayoutCanvas({
         return {
           ...s,
           posX: clamp(newX, 0, surface.width - s.width),
-          posY: clamp(newY, 0, surface.height - s.height),
+          posY: clamp(newY, 0, surface.height - s.length),
         };
       }),
     );
@@ -189,7 +189,7 @@ export default function LayoutCanvas({
               x={shape.posX}
               y={shape.posY}
               width={shape.width}
-              height={shape.height}
+              length={shape.length}
               distance={shape.safetyDistance}
             />
           ))}
@@ -200,7 +200,7 @@ export default function LayoutCanvas({
               x={shape.posX}
               y={shape.posY}
               width={shape.width}
-              height={shape.height}
+              height={shape.length}
               fill={
                 shape.id === selectedId
                   ? 'orange'

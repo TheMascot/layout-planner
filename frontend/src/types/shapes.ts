@@ -13,7 +13,7 @@ export interface RectangleShape {
   posY: number;
 
   width: number;
-  height: number;
+  length: number;
 
   rotation: number;
 

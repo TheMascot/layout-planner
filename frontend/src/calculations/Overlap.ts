@@ -4,8 +4,8 @@ function isOverlapping(a: Shape, b: Shape) {
   return !(
     a.posX + a.width <= b.posX ||
     a.posX >= b.posX + b.width ||
-    a.posY + a.height <= b.posY ||
-    a.posY >= b.posY + b.height
+    a.posY + a.length <= b.posY ||
+    a.posY >= b.posY + b.length
   );
 }
 export default function checkOverlapping(

@@ -48,7 +48,7 @@ export default function InfoPanel({ selectedShape }: Props) {
                 <b>Width:</b> {selectedShape.width} m
               </span>
               <span>
-                <b>Length:</b> {selectedShape.height} m
+                <b>Length:</b> {selectedShape.length} m
               </span>
               <span>
                 <b>Rotation:</b> {selectedShape.rotation ?? 0} deg
