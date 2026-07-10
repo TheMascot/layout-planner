@@ -30,7 +30,9 @@ export default function TopBar({
       <button>Save</button>
       <button onClick={onToggleGrid}>Grid</button>
       <button onClick={onToggleSnap}>Snap</button>
-      <button onClick={onChangeActiveTool}>{activeTool}</button>
+      <button onClick={onChangeActiveTool}>
+        {`${activeTool.charAt(0).toUpperCase()}${activeTool.substring(1)}`}
+      </button>
       <button>Settings</button>
       <button onClick={() => setZoom((z) => z + 0.1)}>+</button>
       <button onClick={() => setZoom((z) => z - 0.1)}>-</button>

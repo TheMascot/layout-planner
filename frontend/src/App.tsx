@@ -1,16 +1,19 @@
 import { useState } from 'react';
-import LayoutCanvas from './components/LayoutCanvas';
 import { surface as initialSurface, shapes as initialShapes } from './data/sampleLayout';
 import TopBar from './components/TopBar';
 import InfoPanel from './components/InfoPanel';
-import type { VisualSettings } from './types/settings';
+import type { VisualSettings } from './types/visualSettings';
 import type { ToolMode } from './types/tools';
+import type { LineAnnotation } from './types/annotations';
+import type { Shape } from './types/shapes';
+import Canvas from './components/canvas_layers/Canvas';
 
 function App() {
-  const [activeTool, setActiveTool] = useState<ToolMode>('Select');
+  const [activeTool, setActiveTool] = useState<ToolMode>('select');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [zoom, setZoom] = useState(5);
-  const [shapes, setShapes] = useState(initialShapes);
+  const [shapes, setShapes] = useState<Shape[]>(initialShapes);
+  const [annotations, setAnnotations] = useState<LineAnnotation[]>([]);
   const [settings, setSettings] = useState<VisualSettings>({
     showGrid: true,
     gridSize: 1,
@@ -34,17 +37,18 @@ function App() {
 
   function handleChangeActiveTool() {
     setActiveTool((current) => {
-      if (current === 'Select') {
+      if (current === 'select') {
         setSelectedId(null);
-        return 'Measure';
-      } else if (current === 'Measure') {
-        return 'Draw';
-      } else return 'Select';
+        return 'measure';
+      } else if (current === 'measure') {
+        return 'annotate';
+      } else return 'select';
     });
   }
 
   return (
     <div style={{ height: '95vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Header */}
       <TopBar
         setZoom={setZoom}
         onToggleGrid={handleToggleGrid}
@@ -52,11 +56,11 @@ function App() {
         onChangeActiveTool={handleChangeActiveTool}
         activeTool={activeTool}
       />
-      {/* MAIN AREA */}
+      {/* Main area */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {/* CANVAS */}
+        {/* Canvas */}
         <div style={{ flex: 1 }}>
-          <LayoutCanvas
+          <Canvas
             settings={settings}
             surface={initialSurface}
             shapes={shapes}
@@ -66,8 +70,11 @@ function App() {
             setZoom={setZoom}
             zoom={zoom}
             activeTool={activeTool}
+            annotations={annotations}
+            setAnnotations={setAnnotations}
           />
         </div>
+        {/* Footer */}
         <InfoPanel selectedShape={selectedShape} />
       </div>
     </div>

@@ -9,7 +9,7 @@ export const surface: Surface = {
 export const shapes: Shape[] = [
   {
     id: '1',
-    name: 'Grippen',
+    name: 'Gripen',
     type: 'rectangle',
     posX: 0,
     posY: 0,

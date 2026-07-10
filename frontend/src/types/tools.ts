@@ -1,1 +1,1 @@
-export type ToolMode = 'Select' | 'Measure' | 'Draw';
+export type ToolMode = 'select' | 'measure' | 'annotate';
