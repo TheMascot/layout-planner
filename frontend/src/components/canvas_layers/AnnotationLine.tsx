@@ -4,7 +4,7 @@ interface AnnotationLineProps {
   currentLine: LineAnnotation;
 }
 
-export function AnnotationLine({ currentLine }: AnnotationLineProps) {
+export function AnnotationLine({ currentLine }: Readonly<AnnotationLineProps>) {
   return (
     <line
       x1={currentLine.start.x}

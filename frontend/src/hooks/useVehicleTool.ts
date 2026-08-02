@@ -50,9 +50,7 @@ export function useVehicleTool({surface, setShapes, settings, activeTool, onSele
     }
 
     function handleBackgroundClick() {
-        if (activeTool === 'select') {
             onSelect(null);
-        }
     }
 
     function handleVehiclePointerDown(e: React.PointerEvent<SVGRectElement>, shape: Shape) {

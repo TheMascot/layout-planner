@@ -20,6 +20,7 @@ export default function SafetyZoneLayer({ shapes }: Props) {
           strokeWidth={0.1}
           strokeDasharray="1 0"
           pointerEvents="none"
+          key={shape.id}
         />
       ))}
     </>

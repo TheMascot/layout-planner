@@ -4,21 +4,21 @@ import TopBar from './components/TopBar';
 import InfoPanel from './components/InfoPanel';
 import type { VisualSettings } from './types/visualSettings';
 import type { ToolMode } from './types/tools';
-import type { LineAnnotation } from './types/annotations';
 import type { Shape } from './types/shapes';
 import Canvas from './components/canvas_layers/Canvas';
+import {useAnnotationTool} from "./hooks/useAnnotationTool.ts";
 
 function App() {
   const [activeTool, setActiveTool] = useState<ToolMode>('select');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [zoom, setZoom] = useState(5);
   const [shapes, setShapes] = useState<Shape[]>(initialShapes);
-  const [annotations, setAnnotations] = useState<LineAnnotation[]>([]);
   const [settings, setSettings] = useState<VisualSettings>({
     showGrid: true,
     gridSize: 1,
     snapToGrid: true,
   });
+  const annotationTool = useAnnotationTool();
 
   const selectedShape = shapes.find((s) => s.id === selectedId) ?? null;
 
@@ -70,12 +70,11 @@ function App() {
             setZoom={setZoom}
             zoom={zoom}
             activeTool={activeTool}
-            annotations={annotations}
-            setAnnotations={setAnnotations}
+            annotationTool={annotationTool}
           />
         </div>
         {/* Footer */}
-        <InfoPanel selectedShape={selectedShape} />
+        <InfoPanel selectedShape={selectedShape} activeTool={activeTool} annotationTool={annotationTool} />
       </div>
     </div>
   );
