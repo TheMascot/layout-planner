@@ -1,17 +1,19 @@
-import { useState } from 'react';
-import type { Point, Shape, Surface } from '../../types/shapes';
+import {useMemo} from 'react';
+import type { Shape, Surface } from '../../types/shapes';
 import checkOverlapping from '../../calculations/Overlap';
 import type { VisualSettings } from '../../types/visualSettings';
 import Grid from '../Grid';
 import type { ToolMode } from '../../types/tools';
 import type { LineAnnotation } from '../../types/annotations';
-import type { MeasuringData } from '../../types/measuringData';
-import { clamp, getMousePosition, snap } from '../../calculations/geometry';
 import { VehicleLayer } from './VehicleLayer';
 import { AnnotationLine } from './AnnotationLine';
 import { Annotations } from './Annotations';
 import { MeasuringLine } from './MeasuringLine';
 import SafetyZoneLayer from './SafetyZoneLayer';
+import {useVehicleTool} from "../../hooks/useVehicleTool.ts";
+import {useMeasureTool} from "../../hooks/useMeasureTool.ts";
+import {useAnnotationTool} from "../../hooks/useAnnotationTool.ts";
+import {useToolController} from "../../hooks/useToolController.ts";
 
 interface Props {
   surface: Surface;
@@ -39,44 +41,18 @@ export default function Canvas({
   activeTool,
   annotations,
   setAnnotations,
-}: Props) {
-  const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [currentLine, setCurrentLine] = useState<LineAnnotation | null>(null);
-  const [measuringData, setMeasuringData] = useState<MeasuringData>({
-    isMeasuring: false,
-    isMeasurementDisplayed: false,
-    measuringStart: null,
-    measuringEnd: null,
+}: Readonly<Props>) {
+  const vehicleTool = useVehicleTool({ surface, setShapes, settings, activeTool, onSelect});
+  const measureTool = useMeasureTool(surface);
+  const annotationTool = useAnnotationTool({setAnnotations})
+  const pointerHandlers = useToolController({
+    activeTool,
+    surface,
+    vehicleTool,
+    measureTool,
+    annotationTool,
   });
-  const conflictIds = new Set<string>();
-
-  function handleMouseDragItem(e: React.PointerEvent<SVGSVGElement>) {
-    if (!draggingId || activeTool !== 'select') return;
-
-    const svg = e.currentTarget;
-    const mouse = getMousePosition(svg, e, surface);
-
-    setShapes((prev) =>
-      prev.map((s) => {
-        if (s.id !== draggingId) return s;
-
-        let newX = mouse.x - offset.x;
-        let newY = mouse.y - offset.y;
-
-        if (settings.snapToGrid) {
-          newX = snap(newX, settings.gridSize);
-          newY = snap(newY, settings.gridSize);
-        }
-
-        return {
-          ...s,
-          posX: clamp(newX, 0, surface.width - s.width),
-          posY: clamp(newY, 0, surface.height - s.length),
-        };
-      }),
-    );
-  }
+  let conflictIds: Set<string>;
 
   function handleCanvasWheel(e: React.WheelEvent<SVGSVGElement>) {
     setZoom((z) => {
@@ -85,93 +61,7 @@ export default function Canvas({
     });
   }
 
-  function handleBackgroundClick() {
-    if (activeTool === 'select') {
-      onSelect(null);
-    }
-  }
-
-  function handleMouseUp() {
-    setDraggingId(null);
-  }
-
-  function handleMeasureStartAndStop(point: Point) {
-    if (measuringData.isMeasurementDisplayed) {
-      setMeasuringData((data) => ({
-        ...data,
-        isMeasuring: false,
-        measuringStart: null,
-        measuringEnd: null,
-        isMeasurementDisplayed: false,
-      }));
-      return;
-    }
-    if (!measuringData.isMeasuring && !measuringData.isMeasurementDisplayed) {
-      setMeasuringData((data) => ({
-        ...data,
-        isMeasuring: true,
-        measuringStart: point,
-        measuringEnd: point,
-        isMeasurementDisplayed: false,
-      }));
-    } else {
-      setMeasuringData((data) => ({
-        ...data,
-        isMeasuring: false,
-        measuringEnd: point,
-        isMeasurementDisplayed: true,
-      }));
-    }
-  }
-
-  function handleMeasureMove(e: React.PointerEvent<SVGSVGElement>) {
-    if (!measuringData.measuringStart) return;
-    if (measuringData.isMeasuring) {
-      const point = getMousePosition(e.currentTarget, e, surface);
-
-      setMeasuringData((data) => ({
-        ...data,
-        measuringEnd: point,
-      }));
-    }
-  }
-
-  function handleAnnotateClick(point: Point) {
-    setCurrentLine({
-      id: 'preview',
-      start: point,
-      end: point,
-      color: 'red',
-      width: 0.3,
-      selected: true,
-    });
-  }
-
-  function handleAnnotateMove(point: Point) {
-    setCurrentLine((line) => {
-      if (!line) return null;
-
-      return {
-        ...line,
-        end: point,
-      };
-    });
-  }
-
-  function handleSaveAnnotation() {
-    if (!currentLine) return;
-    setAnnotations((prev) => [
-      ...prev,
-      {
-        ...currentLine!,
-        id: crypto.randomUUID(),
-      },
-    ]);
-
-    setCurrentLine(null);
-  }
-
-  checkOverlapping(shapes, conflictIds);
+  conflictIds = useMemo(()=> checkOverlapping(shapes), [shapes]);
 
   return (
     <>
@@ -193,53 +83,10 @@ export default function Canvas({
             userSelect: 'none',
             WebkitUserSelect: 'none',
           }}
-          onPointerMove={(e) => {
-            if (activeTool === 'measure') {
-              handleMeasureMove(e);
-              return;
-            }
-            if (activeTool === 'select') {
-              handleMouseDragItem(e);
-              return;
-            }
-            if (activeTool === 'annotate') {
-              const point = getMousePosition(e.currentTarget, e, surface);
-              handleAnnotateMove(point);
-              return;
-            }
-          }}
-          onPointerDown={(e) => {
-            const point = getMousePosition(e.currentTarget, e, surface);
-
-            if (activeTool === 'measure' && e.button === 0) {
-              e.currentTarget.setPointerCapture(e.pointerId);
-              handleMeasureStartAndStop(point);
-              return;
-            }
-
-            if (activeTool === 'select' && e.button === 0) {
-              handleBackgroundClick();
-            }
-            if (activeTool === 'annotate' && e.button === 0) {
-              e.currentTarget.setPointerCapture(e.pointerId);
-              handleAnnotateClick(point);
-            }
-          }}
-          onPointerLeave={() => {
-            setDraggingId(null);
-          }}
-          onPointerUp={(e) => {
-            if (activeTool === 'measure') {
-              e.currentTarget.releasePointerCapture(e.pointerId);
-            }
-            if (activeTool === 'select') {
-              handleMouseUp();
-            }
-            if (activeTool === 'annotate') {
-              handleSaveAnnotation();
-              e.currentTarget.releasePointerCapture(e.pointerId);
-            }
-          }}
+          onPointerMove={pointerHandlers.onPointerMove}
+          onPointerDown={pointerHandlers.onPointerDown}
+          onPointerLeave={pointerHandlers.onPointerLeave}
+          onPointerUp={pointerHandlers.onPointerUp}
           onWheel={(e) => {
             handleCanvasWheel(e);
           }}
@@ -247,7 +94,7 @@ export default function Canvas({
           {/* Grid */}
           {settings.showGrid && <Grid surface={surface} gridSize={settings.gridSize} />}
           {/* Current line */}
-          {currentLine?.start && <AnnotationLine currentLine={currentLine} />}
+          {annotationTool.currentLine?.start && <AnnotationLine currentLine={annotationTool.currentLine} />}
           {/* Stored annotations*/}
           <Annotations annotations={annotations} />
           {/* Safety Zones */}
@@ -255,17 +102,15 @@ export default function Canvas({
           {/* Vehicles */}
           <VehicleLayer
             shapes={shapes}
-            surface={surface}
             conflictIds={conflictIds}
             activeTool={activeTool}
             selectedId={selectedId}
-            onSelect={onSelect}
-            setDraggingId={setDraggingId}
-            setOffset={setOffset}
+            setDraggingId={vehicleTool.setDraggingId}
+            handleVehiclePointerDown={vehicleTool.handleVehiclePointerDown}
           />
 
           {/* Measuring line and text */}
-          {activeTool === 'measure' && <MeasuringLine measuringData={measuringData} />}
+          {activeTool === 'measure' && <MeasuringLine measuringData={measureTool.measuringData} />}
         </svg>
       </div>
       <footer></footer>

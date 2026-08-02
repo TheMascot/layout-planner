@@ -9,19 +9,19 @@ function isOverlapping(a: Shape, b: Shape) {
   );
 }
 export default function checkOverlapping(
-  shapes: Shape[],
-  conflictIds: Set<string>,
-): Set<string> | null {
+  shapes: Shape[]
+): Set<string> {
+  let overlapping: Set<string> = new Set();
   for (let i = 0; i < shapes.length; i++) {
     for (let j = i + 1; j < shapes.length; j++) {
       const a = shapes[i];
       const b = shapes[j];
 
       if (isOverlapping(a, b)) {
-        conflictIds.add(a.id);
-        conflictIds.add(b.id);
+        overlapping.add(a.id);
+        overlapping.add(b.id);
       }
     }
   }
-  return null;
+  return overlapping;
 }

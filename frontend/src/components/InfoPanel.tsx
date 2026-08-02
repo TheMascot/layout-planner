@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Shape } from '../types/shapes';
 
-interface Props {
+interface  Props {
   selectedShape: Shape | null;
 }
 
