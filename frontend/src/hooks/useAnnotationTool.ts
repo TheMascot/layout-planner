@@ -2,6 +2,7 @@ import {useRef, useState} from "react";
 import type {LineAnnotation} from "../types/annotations.ts";
 import type {Point} from "../types/shapes.ts";
 import type {AnnotationToolApi} from "../types/annotationToolApi.ts";
+import calculateDistance from "../calculations/CalculateDistance.ts";
 
 type GestureState = 'idle' | 'pending' | 'drawing';
 
@@ -48,9 +49,8 @@ export function useAnnotationTool(): AnnotationToolApi {
         if (!startClient || !startSurface) return;
 
         if (state === 'pending') {
-            const dx = clientPoint.x - startClient.x;
-            const dy = clientPoint.y - startClient.y;
-            const movedEnough = dx * dx + dy * dy >= DRAG_THRESHOLD_PX * DRAG_THRESHOLD_PX;
+            const movedEnough =
+                calculateDistance(startClient, clientPoint) >= DRAG_THRESHOLD_PX;
             if (!movedEnough) return;
 
             gestureStateRef.current = 'drawing';
@@ -88,10 +88,7 @@ export function useAnnotationTool(): AnnotationToolApi {
                 return;
             }
 
-            const length = Math.hypot(
-                lineToSave.end.x - lineToSave.start.x,
-                lineToSave.end.y - lineToSave.start.y,
-            );
+            const length = calculateDistance(lineToSave.start, lineToSave.end);
 
             if (length >= MIN_LINE_LENGTH) {
                 setAnnotations((prev) => [
