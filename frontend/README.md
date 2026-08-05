@@ -1,77 +1,110 @@
-# React + TypeScript + Vite
+# Layout Planner
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Layout Planner is a browser-based planning tool for airport aprons and hangars.  
+Its goal is to help planners place aircraft and other ground vehicles on scaled surfaces, visualize occupancy, and make safer space-allocation decisions.
 
-Currently, two official plugins are available:
+## Vision
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The app is designed around real airside layout questions:
+- How many aircraft/vehicles fit on a surface?
+- Are required safety distances respected?
+- Where are overlap conflicts?
+- How does occupancy evolve over time when operations are scheduled?
 
-## React Compiler
+## Core concepts
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- **Surface**: A scaled operational area (for example an apron section or hangar floor).
+- **Object**: A placeable entity (aircraft, helicopter, service vehicle, or generic rectangle).
+- **Safety distance**: Buffer zone around an object for clearance planning.
+- **Occupancy**: The set of objects currently present on one or more surfaces.
+- **Timeline event**: A time-based appearance/disappearance rule for occupancy simulation.
 
-Note: This will impact Vite dev & build performances.
+## Working modes
 
-## Expanding the ESLint configuration
+1. **Static planning mode**  
+   Design and validate layouts without date/time constraints.
+2. **Time-aware planning mode (timeline)**  
+   Explore how occupancy changes over time as objects appear/disappear.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Feature status
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+| Area | Capability | Status |
+| --- | --- | --- |
+| Surface | Scale-based SVG workspace | Implemented |
+| Surface | Grid visibility toggle | Implemented |
+| Surface | Snap to grid toggle | Implemented |
+| Surface | Multiple editable surfaces on one screen | Planned |
+| Objects | Move objects on surface | Implemented |
+| Objects | Safety zone visualization | Implemented |
+| Objects | Overlap conflict highlighting | Implemented |
+| Objects | Rotation editing/interaction | Planned |
+| Objects | Collision detection with rotated geometry | Planned |
+| Tools | Select mode | Implemented |
+| Tools | Distance measuring mode | Implemented |
+| Tools | Annotation mode (draw/select/delete) | Implemented |
+| Persistence | Save/load layouts | Planned (UI placeholders exist) |
+| Data | Load/save surfaces and models from database | Planned |
+| Timeline | Time-aware occupancy playback | Planned |
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Current implementation snapshot
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Single-surface sample layout (`Kilo apron`) is loaded from local sample data.
+- Objects are rendered as scaled rectangles and can be moved with optional snapping.
+- Safety zones are drawn around each object.
+- Object overlap is detected and highlighted in red.
+- Tool cycle currently switches between `select`, `measure`, and `annotate`.
+- Annotation controls include undo, delete-all, and delete-selected.
+- Backend folder exists but API/database integration is not implemented yet.
 
+## Tech stack
+
+- **Frontend**: React 19 + TypeScript + Vite
+- **Rendering**: SVG-based interactive canvas layers
+- **State management**: React hooks and local component state
+- **Tooling**: ESLint, TypeScript project references
+
+## Project structure
+
+```text
+frontend/
+  src/
+    calculations/      # geometry, distance, overlap logic
+    components/        # UI + canvas layers
+    data/              # sample surfaces and objects
+    hooks/             # tool interaction logic
+    types/             # domain types and tool APIs
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Getting started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Prerequisites
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js 20+ recommended
+- npm
 
+### Install and run
+
+```bash
+npm install
+npm run dev
 ```
+
+### Available scripts
+
+- `npm run dev` - start Vite development server
+- `npm run build` - type-check and build production bundle
+- `npm run lint` - run ESLint
+- `npm run preview` - preview production build locally
+
+## Roadmap focus
+
+1. Database-backed catalog for aircraft/vehicle models and user-defined surfaces.
+2. Save/load workflows for layouts.
+3. Multi-surface planning in a single workspace.
+4. Rotation-aware collision detection.
+5. Timeline mode for time-based occupancy simulation.
+
+## Notes
+
+This repository currently contains the frontend prototype.  
+As backend and persistence features are introduced, this README will be updated to include API and deployment details.
