@@ -46,6 +46,12 @@ function App() {
     });
   }
 
+  function handleUpdateShapeRotation(id: string, rotation: number) {
+    setShapes((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, rotation: ((Math.round(rotation) % 360) + 360) % 360 } : s)),
+    );
+  }
+
   return (
     <div style={{ height: '95vh', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
@@ -74,7 +80,7 @@ function App() {
           />
         </div>
         {/* Footer */}
-        <InfoPanel selectedShape={selectedShape} activeTool={activeTool} annotationTool={annotationTool} />
+        <InfoPanel selectedShape={selectedShape} activeTool={activeTool} annotationTool={annotationTool} onRotationChange={handleUpdateShapeRotation} />
       </div>
     </div>
   );

@@ -1,5 +1,12 @@
 import {useState} from "react";
-import {clamp, getMousePosition, snap} from "../calculations/geometry.ts";
+import {
+    clamp,
+    getAngleFromCenter,
+    getMousePosition,
+    getShapeCenter,
+    normalizeDegree,
+    snap
+} from "../calculations/geometry.ts";
 import type {Shape, Surface} from "../types/shapes.ts";
 import type {VisualSettings} from "../types/visualSettings.ts";
 import type {ToolMode} from "../types/tools.ts";
@@ -17,12 +24,28 @@ interface Props {
 export function useVehicleTool({surface, setShapes, settings, activeTool, onSelect}: Props) {
     const [draggingId, setDraggingId] = useState<string | null>(null);
     const [offset, setOffset] = useState({x: 0, y: 0});
+    const [rotatingId, setRotatingId] = useState<string | null>(null);
+    const [rotationOffset, setRotationOffset] = useState(0);
 
     function handlePointerMove(e: React.PointerEvent<SVGSVGElement>) {
-        if (!draggingId || activeTool !== 'select') return;
+        if (activeTool !== 'select') return;
 
         const svg = e.currentTarget;
         const mouse = getMousePosition(svg, e, surface);
+
+        if (rotatingId) {
+            setShapes((prev) =>
+                prev.map((s) => {
+                    if (s.id !== rotatingId) return s;
+                    const center = getShapeCenter(s);
+                    const pointerAngle = getAngleFromCenter(center, mouse);
+                    return { ...s, rotation: normalizeDegree(pointerAngle + rotationOffset) };
+                }),
+            );
+            return;
+        }
+
+        if (!draggingId) return;
 
         setShapes((prev) =>
             prev.map((s) => {
@@ -46,7 +69,8 @@ export function useVehicleTool({surface, setShapes, settings, activeTool, onSele
     }
 
     function handlePointerUp() {
-        setDraggingId(null);
+        // setDraggingId(null);
+        clearInteractions();
     }
 
     function handleBackgroundClick() {
@@ -70,15 +94,44 @@ export function useVehicleTool({surface, setShapes, settings, activeTool, onSele
         }
     }
 
+    function handleRotatePointerDown(e: React.PointerEvent<SVGCircleElement>, shape: Shape) {
+        e.stopPropagation();
+        if (activeTool !== 'select' || e.button !== 0) return;
+
+        const svg = e.currentTarget.ownerSVGElement;
+        if (!svg) return;
+
+        const mouse = getMousePosition(svg, e, surface);
+        const center = getShapeCenter(shape);
+        const pointerAngle = getAngleFromCenter(center, mouse);
+
+        onSelect(shape.id);
+        setDraggingId(null);
+        setRotatingId(shape.id);
+        setRotationOffset(shape.rotation - pointerAngle);
+    }
+
+    function clearInteractions() {
+        setDraggingId(null);
+        setRotatingId(null);
+    }
+
+    // function handlePointerUp() {
+    //     clearInteractions();
+    // }
+
     return {
         draggingId,
+        rotatingId,
         setDraggingId,
         offset,
         setOffset,
         handlePointerMove,
         handlePointerUp,
+        clearInteractions,
         handleBackgroundClick,
-        handleVehiclePointerDown
+        handleVehiclePointerDown,
+        handleRotatePointerDown,
     };
 
 }

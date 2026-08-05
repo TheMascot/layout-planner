@@ -13,6 +13,7 @@ interface Props {
         handlePointerMove: (e: SvgEvt) => void;
         handlePointerUp: () => void;
         handleBackgroundClick: () => void;
+        clearInteractions: () => void;
         setDraggingId: React.Dispatch<React.SetStateAction<string | null>>;
     };
     measureTool: {
@@ -99,6 +100,6 @@ export function useToolController({
 
     return {
         ...handlers,
-        onPointerLeave: () => vehicleTool.setDraggingId(null),
+        onPointerLeave: () => vehicleTool.clearInteractions()
     };
 }

@@ -106,7 +106,7 @@ export default function Canvas({
                         conflictIds={conflictIds}
                         activeTool={activeTool}
                         selectedId={selectedId}
-                        setDraggingId={vehicleTool.setDraggingId}
+                        handleRotatePointerDown={vehicleTool.handleRotatePointerDown}
                         handleVehiclePointerDown={vehicleTool.handleVehiclePointerDown}
                     />
 

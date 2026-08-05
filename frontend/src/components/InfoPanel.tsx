@@ -6,9 +6,10 @@ interface Props {
     selectedShape: Shape | null;
     activeTool: ToolMode;
     annotationTool: AnnotationToolApi
+    onRotationChange: (id: string, rotation: number) => void;
 }
 
-export default function InfoPanel({selectedShape, activeTool, annotationTool}: Readonly<Props>) {
+export default function InfoPanel({selectedShape, activeTool, annotationTool, onRotationChange}: Readonly<Props>) {
 
     return (
 
@@ -37,8 +38,23 @@ export default function InfoPanel({selectedShape, activeTool, annotationTool}: R
                 <b>Length:</b> {selectedShape.length} m
               </span>
                             <span>
-                <b>Rotation:</b> {selectedShape.rotation ?? 0} deg
-              </span>
+  <b>Rotation:</b>{' '}
+                                <input
+                                    type="number"
+                                    step={1}
+                                    value={Math.round(selectedShape.rotation)}
+                                    onChange={(e) => {
+                                        const next = Number(e.target.value);
+                                        if (!Number.isFinite(next)) return;
+                                        onRotationChange(selectedShape.id, next);
+                                    }}
+                                    style={{width: 64}}
+                                />{' '}
+                                deg
+</span>
+                            <button type="button" onClick={() => onRotationChange(selectedShape.id, 0)}>
+                                Reset rot
+                            </button>
                             <span>
                 <b>Safety zone:</b> {selectedShape.safetyDistance ?? 0} m
               </span>
@@ -73,7 +89,7 @@ export default function InfoPanel({selectedShape, activeTool, annotationTool}: R
                         type="button"
                         hidden={annotationTool.selectedAnnotationId === null}
                         onClick={() => {
-                            if(!annotationTool.selectedAnnotationId) return;
+                            if (!annotationTool.selectedAnnotationId) return;
                             annotationTool.handleDeleteSelectedAnnotation(annotationTool.selectedAnnotationId)
                         }}
                         disabled={annotationTool.annotations.length === 0}
