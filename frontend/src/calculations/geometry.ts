@@ -16,6 +16,30 @@ export function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
 
+export function clampShapePositionInsideSurface(shape: Shape, surface: Surface) {
+  const halfW = shape.width / 2;
+  const halfH = shape.length / 2;
+  const angle = (shape.rotation * Math.PI) / 180;
+
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+
+  // Half extents of rotated rect's axis-aligned bounding box
+  const extentX = Math.abs(cos) * halfW + Math.abs(sin) * halfH;
+  const extentY = Math.abs(sin) * halfW + Math.abs(cos) * halfH;
+
+  let centerX = shape.posX + halfW;
+  let centerY = shape.posY + halfH;
+
+  centerX = clamp(centerX, extentX, surface.width - extentX);
+  centerY = clamp(centerY, extentY, surface.height - extentY);
+
+  return {
+    posX: centerX - halfW,
+    posY: centerY - halfH,
+  };
+}
+
 export function snap(value: number, gridSize: number) {
   return Math.round(value / gridSize) * gridSize;
 }

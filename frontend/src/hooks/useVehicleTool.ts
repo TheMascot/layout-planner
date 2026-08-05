@@ -1,6 +1,6 @@
 import {useState} from "react";
 import {
-    clamp,
+    clampShapePositionInsideSurface,
     getAngleFromCenter,
     getMousePosition,
     getShapeCenter, isShapeInsideSurface,
@@ -65,10 +65,18 @@ export function useVehicleTool({surface, setShapes, settings, activeTool, onSele
                     newY = snap(newY, settings.gridSize);
                 }
 
+                const candidate = {
+                    ...s,
+                    posX: newX,
+                    posY: newY,
+                };
+
+                const bounded = clampShapePositionInsideSurface(candidate, surface);
+
                 return {
                     ...s,
-                    posX: clamp(newX, 0, surface.width - s.width),
-                    posY: clamp(newY, 0, surface.height - s.length),
+                    posX: bounded.posX,
+                    posY: bounded.posY,
                 };
             }),
         );
