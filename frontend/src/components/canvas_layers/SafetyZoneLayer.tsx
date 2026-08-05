@@ -34,7 +34,6 @@ export default function SafetyZoneLayer({shapes}: Readonly<Props>) {
                             strokeWidth={SAFETY_STROKE_WIDTH}
                             strokeDasharray={SAFETY_DASH}
                             pointerEvents="none"
-                            key={shape.id}
                         />
                     </g>
                 )
