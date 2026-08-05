@@ -7,6 +7,7 @@ import type { ToolMode } from './types/tools';
 import type { Shape } from './types/shapes';
 import Canvas from './components/canvas_layers/Canvas';
 import {useAnnotationTool} from "./hooks/useAnnotationTool.ts";
+import {isShapeInsideSurface, normalizeDegree} from "./calculations/geometry.ts";
 
 function App() {
   const [activeTool, setActiveTool] = useState<ToolMode>('select');
@@ -47,8 +48,21 @@ function App() {
   }
 
   function handleUpdateShapeRotation(id: string, rotation: number) {
+    const normalized = normalizeDegree(rotation);
+
     setShapes((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, rotation: ((Math.round(rotation) % 360) + 360) % 360 } : s)),
+        prev.map((s) => {
+          if (s.id !== id) return s;
+
+          const candidate = { ...s, rotation: normalized };
+
+          // use `initialSurface` from shape data
+          if (!isShapeInsideSurface(candidate, initialSurface)) {
+            return s; // reject invalid manual angle
+          }
+
+          return candidate;
+        }),
     );
   }
 

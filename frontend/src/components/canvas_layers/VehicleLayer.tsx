@@ -14,8 +14,8 @@ interface Props {
 const VEHICLE_FILL_SELECTED = 'orange';
 const VEHICLE_FILL_CONFLICT = '#ff4d4d';
 const VEHICLE_FILL_DEFAULT = 'steelblue';
-const ROTATE_HANDLE_OFFSET = 3;
-const ROTATE_HANDLE_RADIUS = 0.9;
+const ROTATE_HANDLE_OFFSET = -3;
+const ROTATE_HANDLE_RADIUS = 1;
 
 export function VehicleLayer({
                                  shapes,

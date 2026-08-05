@@ -3,7 +3,7 @@ import {
     clamp,
     getAngleFromCenter,
     getMousePosition,
-    getShapeCenter,
+    getShapeCenter, isShapeInsideSurface,
     normalizeDegree,
     snap
 } from "../calculations/geometry.ts";
@@ -13,7 +13,6 @@ import type {ToolMode} from "../types/tools.ts";
 
 interface Props {
     surface: Surface;
-    // shapes: Shape[];
     setShapes: React.Dispatch<React.SetStateAction<Shape[]>>;
     settings: VisualSettings;
     activeTool: ToolMode;
@@ -39,7 +38,14 @@ export function useVehicleTool({surface, setShapes, settings, activeTool, onSele
                     if (s.id !== rotatingId) return s;
                     const center = getShapeCenter(s);
                     const pointerAngle = getAngleFromCenter(center, mouse);
-                    return { ...s, rotation: normalizeDegree(pointerAngle + rotationOffset) };
+                    const nextRotation = normalizeDegree(pointerAngle + rotationOffset);
+
+                    const candidate = { ...s, rotation: nextRotation };
+                    if (!isShapeInsideSurface(candidate, surface)) {
+                        return s; // keep last valid rotation
+                    }
+
+                    return candidate;
                 }),
             );
             return;
@@ -69,7 +75,6 @@ export function useVehicleTool({surface, setShapes, settings, activeTool, onSele
     }
 
     function handlePointerUp() {
-        // setDraggingId(null);
         clearInteractions();
     }
 
@@ -115,10 +120,6 @@ export function useVehicleTool({surface, setShapes, settings, activeTool, onSele
         setDraggingId(null);
         setRotatingId(null);
     }
-
-    // function handlePointerUp() {
-    //     clearInteractions();
-    // }
 
     return {
         draggingId,

@@ -103,6 +103,10 @@ npm run dev
 3. Multi-surface planning in a single workspace.
 4. Rotation-aware collision detection.
 5. Timeline mode for time-based occupancy simulation.
+6. Rotation UX: show a ghost preview object when the dragged rotation is invalid (out of bounds), while keeping the real object at last valid angle.
+7. Rotation input UX in InfoPanel:
+   - Arrow steppers change by exactly 1 degree per step.
+   - Typed value is only applied on explicit confirmation (Enter or confirm action), not on every keystroke.
 
 ## Notes
 

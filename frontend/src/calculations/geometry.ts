@@ -61,3 +61,15 @@ export function getRotatedRectCorners(shape: Shape): Point[] {
 
   return corners.map((corner) => rotatePoint(corner, center, shape.rotation));
 }
+
+export function isShapeInsideSurface(shape: Shape, surface: Surface, padding = 0) {
+  const corners = getRotatedRectCorners(shape);
+
+  return corners.every(
+      ({ x, y }) =>
+          x >= 0 + padding && // if we want safetyDistance to be included
+          y >= 0 + padding && // add shape.safetyDistance instead of 0
+          x <= surface.width - padding &&
+          y <= surface.height - padding,
+  );
+}
