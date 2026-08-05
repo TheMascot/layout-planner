@@ -1,0 +1,16 @@
+# IntelliJ / IDE
+.idea/
+*.iml
+out/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backend (Java)
+backend/target/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
