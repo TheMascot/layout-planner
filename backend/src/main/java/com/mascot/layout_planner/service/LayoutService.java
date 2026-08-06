@@ -1,8 +1,12 @@
 package com.mascot.layout_planner.service;
 
 import com.mascot.layout_planner.domain.PlacedObject;
+import com.mascot.layout_planner.domain.Surface;
 import com.mascot.layout_planner.dto.outgoing.PlacedObjectListItem;
+import com.mascot.layout_planner.dto.outgoing.SurfaceDetails;
+import com.mascot.layout_planner.dto.outgoing.SurfaceListItem;
 import com.mascot.layout_planner.repository.PlacedObjectRepository;
+import com.mascot.layout_planner.repository.SurfaceRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,15 +15,56 @@ import java.util.List;
 @Service
 public class LayoutService {
 
-    PlacedObjectRepository placedObjectRepository;
+    private final PlacedObjectRepository placedObjectRepository;
+    private final SurfaceRepository surfaceRepository;
 
-    public LayoutService(PlacedObjectRepository placedObjectRepository) {
+    public LayoutService(PlacedObjectRepository placedObjectRepository, SurfaceRepository surfaceRepository) {
         this.placedObjectRepository = placedObjectRepository;
+        this.surfaceRepository = surfaceRepository;
     }
 
     public List<PlacedObjectListItem> findAllPlacedObjectBySurfaceId(Long surfaceId) {
         List<PlacedObject> placedObjects = placedObjectRepository.findAllBySurface_Id(surfaceId);
         return this.mapPlacedObjectsToDto(placedObjects);
+    }
+
+    public List<SurfaceListItem> findAllSurfaces() {
+        List<Surface> surfaces = this.surfaceRepository.findAll();
+        return this.mapSurfacesToDto(surfaces);
+    }
+
+    public SurfaceDetails findSurfaceById(Long surfaceId) {
+        Surface surface = this.surfaceRepository.findById(surfaceId).orElseThrow(
+                () -> new RuntimeException("Surface with id " + surfaceId + " not found"));
+
+        List<PlacedObject> placedObjects = placedObjectRepository.findAllBySurface_Id(surfaceId);
+        List<PlacedObjectListItem> placedObjectListItems = this.mapPlacedObjectsToDto(placedObjects);
+
+        return this.mapSurfaceToDto(surface, placedObjectListItems);
+
+    }
+
+    private SurfaceDetails mapSurfaceToDto(Surface surface, List<PlacedObjectListItem> placedObjectListItems) {
+        SurfaceDetails surfaceDetails = new SurfaceDetails();
+        surfaceDetails.setId(surface.getId());
+        surfaceDetails.setName(surface.getName());
+        surfaceDetails.setLength(surface.getLength());
+        surfaceDetails.setWidth(surface.getWidth());
+        surfaceDetails.setPlacedObjects(placedObjectListItems);
+        return surfaceDetails;
+    }
+
+    private List<SurfaceListItem> mapSurfacesToDto(List<Surface> surfaces) {
+        List<SurfaceListItem> listSurfaces = new ArrayList<>();
+        for (Surface s : surfaces) {
+            SurfaceListItem dto = new SurfaceListItem();
+            dto.setId(s.getId());
+            dto.setName(s.getName());
+            dto.setLength(s.getLength());
+            dto.setWidth(s.getWidth());
+            listSurfaces.add(dto);
+        }
+        return listSurfaces;
     }
 
     private List<PlacedObjectListItem> mapPlacedObjectsToDto(List<PlacedObject> placedObjects) {
@@ -37,9 +82,12 @@ public class LayoutService {
             dto.setWidth(p.getWidth());
             dto.setLength(p.getLength());
             dto.setSafetyDistance(p.getSafetyDistance());
-            dto.setSurfaceId(p.getSurface().getId());
+            if (p.getSurface() != null) {
+                dto.setSurfaceId(p.getSurface().getId());
+            }
             placedObjectListItems.add(dto);
         }
         return placedObjectListItems;
     }
+
 }

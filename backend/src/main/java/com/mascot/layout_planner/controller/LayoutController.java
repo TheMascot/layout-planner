@@ -1,6 +1,8 @@
 package com.mascot.layout_planner.controller;
 
 import com.mascot.layout_planner.dto.outgoing.PlacedObjectListItem;
+import com.mascot.layout_planner.dto.outgoing.SurfaceDetails;
+import com.mascot.layout_planner.dto.outgoing.SurfaceListItem;
 import com.mascot.layout_planner.service.LayoutService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +19,8 @@ import java.util.List;
 @RequestMapping("/api/v1/layout")
 public class LayoutController {
 
-    LayoutService layoutService;
-    Logger logger = LoggerFactory.getLogger(LayoutController.class);
+   private final LayoutService layoutService;
+   private final Logger logger = LoggerFactory.getLogger(LayoutController.class);
 
     public LayoutController(LayoutService layoutService) {
         this.layoutService = layoutService;
@@ -31,5 +33,19 @@ public class LayoutController {
     {
      logger.info("*** GET REQUEST to placed objects on surface with id: {}", surfaceId);
      return new ResponseEntity<>(this.layoutService.findAllPlacedObjectBySurfaceId(surfaceId), HttpStatus.OK);
+    }
+
+    @GetMapping("/surfaces")
+    public ResponseEntity<List<SurfaceListItem>> getAllSurfaces()
+    {
+        logger.info("*** GET REQUEST for all surfaces");
+        return new ResponseEntity<>(this.layoutService.findAllSurfaces(), HttpStatus.OK);
+    }
+
+    @GetMapping("/surfaces/{surfaceId}")
+    public ResponseEntity<SurfaceDetails> getSurfaceById(@PathVariable Long surfaceId)
+    {
+        logger.info("*** GET REQUEST for surface with id: {}", surfaceId);
+        return new ResponseEntity<>(this.layoutService.findSurfaceById(surfaceId), HttpStatus.OK);
     }
 }
