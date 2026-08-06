@@ -101,6 +101,9 @@ function App() {
         activeTool={activeTool}
       />
       {/* Main area */}
+
+      {shapes.length === 0 ?
+     <div>Create a new layout or load one from the database.</div> :
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Canvas */}
         <div style={{ flex: 1 }}>
@@ -120,6 +123,7 @@ function App() {
         {/* Footer */}
         <InfoPanel selectedShape={selectedShape} activeTool={activeTool} annotationTool={annotationTool} onRotationChange={handleUpdateShapeRotation} />
       </div>
+      }
     </div>
   );
 }
