@@ -3,7 +3,7 @@ import type { Surface, Shape } from '../types/shapes';
 export const surface: Surface = {
   name: 'Kilo apron',
   width: 300,
-  height: 60,
+  length: 60,
 };
 
 export const shapes: Shape[] = [

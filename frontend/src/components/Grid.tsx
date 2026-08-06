@@ -33,8 +33,8 @@ export default function Grid({ surface, gridSize }: GripProps) {
         </pattern>
       </defs>
 
-      <rect width={surface.width} height={surface.height} fill="url(#gridPattern)" />
-      <rect width={surface.width} height={surface.height} fill="url(#majorGridPattern)" />
+      <rect width={surface.width} height={surface.length} fill="url(#gridPattern)" />
+      <rect width={surface.width} height={surface.length} fill="url(#majorGridPattern)" />
     </>
   );
 }

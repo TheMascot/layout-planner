@@ -71,10 +71,10 @@ export default function Canvas({
                 }}
             >
                 <svg
-                    viewBox={`0 0 ${surface.width} ${surface.height}`}
+                    viewBox={`0 0 ${surface.width} ${surface.length}`}
                     style={{
                         width: surface.width * zoom,
-                        height: surface.height * zoom,
+                        height: surface.length * zoom,
                         border: '1px solid red',
                         cursor: activeTool !== 'select' ? 'crosshair' : 'auto',
                         userSelect: 'none',

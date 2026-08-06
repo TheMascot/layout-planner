@@ -4,7 +4,7 @@ export function getMousePosition(svg: SVGSVGElement, event: React.PointerEvent, 
   const rect = svg.getBoundingClientRect();
 
   const scaleX = surface.width / rect.width;
-  const scaleY = surface.height / rect.height;
+  const scaleY = surface.length / rect.height;
 
   return {
     x: (event.clientX - rect.left) * scaleX,
@@ -32,7 +32,7 @@ export function clampShapePositionInsideSurface(shape: Shape, surface: Surface) 
   let centerY = shape.posY + halfH;
 
   centerX = clamp(centerX, extentX, surface.width - extentX);
-  centerY = clamp(centerY, extentY, surface.height - extentY);
+  centerY = clamp(centerY, extentY, surface.length - extentY);
 
   return {
     posX: centerX - halfW,
@@ -94,6 +94,6 @@ export function isShapeInsideSurface(shape: Shape, surface: Surface, padding = 0
           x >= 0 + padding && // if we want safetyDistance to be included
           y >= 0 + padding && // add shape.safetyDistance instead of 0
           x <= surface.width - padding &&
-          y <= surface.height - padding,
+          y <= surface.length - padding,
   );
 }

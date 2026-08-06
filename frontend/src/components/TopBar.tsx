@@ -26,8 +26,11 @@ export default function TopBar({
         gap: 10,
       }}
     >
-      <button>Load</button>
-      <button>Save</button>
+      <button>New Shape</button>
+      <button>New Layout</button>
+      <button>Load Shape</button>
+      <button>Load Layout</button>
+      <button>Save All</button>
       <button onClick={onToggleGrid}>Grid</button>
       <button onClick={onToggleSnap}>Snap</button>
       <button onClick={onChangeActiveTool}>

@@ -1,13 +1,15 @@
 export interface Surface {
   name: string;
   width: number;
-  height: number;
+  length: number;
 }
 
 export interface RectangleShape {
   id: string;
   name: string;
-  type: 'aircraft' | 'helicopter' | 'rectangle';
+
+  category: 'AIRCRAFT' | 'VEHICLE' | 'EQUIPMENT';
+  geometryType: 'RECTANGLE' | 'CIRCLE';
 
   posX: number;
   posY: number;
@@ -16,6 +18,7 @@ export interface RectangleShape {
   length: number;
 
   rotation: number;
+  radius: number;
 
   safetyDistance: number;
 }
