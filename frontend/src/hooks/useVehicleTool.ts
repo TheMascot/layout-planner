@@ -16,14 +16,14 @@ interface Props {
     setShapes: React.Dispatch<React.SetStateAction<Shape[]>>;
     settings: VisualSettings;
     activeTool: ToolMode;
-    onSelect: (id: string | null) => void;
+    onSelect: (id: number | null) => void;
 }
 
 
 export function useVehicleTool({surface, setShapes, settings, activeTool, onSelect}: Props) {
-    const [draggingId, setDraggingId] = useState<string | null>(null);
+    const [draggingId, setDraggingId] = useState<number | null>(null);
     const [offset, setOffset] = useState({x: 0, y: 0});
-    const [rotatingId, setRotatingId] = useState<string | null>(null);
+    const [rotatingId, setRotatingId] = useState<number | null>(null);
     const [rotationOffset, setRotationOffset] = useState(0);
 
     function handlePointerMove(e: React.PointerEvent<SVGSVGElement>) {

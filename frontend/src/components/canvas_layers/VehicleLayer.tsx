@@ -4,9 +4,9 @@ import {getShapeCenter} from '../../calculations/geometry.ts';
 
 interface Props {
     shapes: Shape[];
-    conflictIds: Set<string>;
+    conflictIds: Set<number>;
     activeTool: ToolMode;
-    selectedId: string | null;
+    selectedId: number | null;
     handleVehiclePointerDown: (e: React.PointerEvent<SVGRectElement>, shape: Shape) => void;
     handleRotatePointerDown: (e: React.PointerEvent<SVGCircleElement>, shape: Shape) => void;
 }

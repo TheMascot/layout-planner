@@ -7,7 +7,7 @@ export function mapPlacedObjectToShape(item: PlacedObjectResponseModel): Shape {
         throw new Error(`Placed object ${item.id} is not a rectangle, but the canvas only supports rectangles now.`);
     }
     return {
-        id: String(item.id),
+        id: item.id,
         name: item.name,
         geometryType: item.geometryType,
         category: item.category,
@@ -16,6 +16,7 @@ export function mapPlacedObjectToShape(item: PlacedObjectResponseModel): Shape {
         width: item.width,
         length: item.length,
         rotation: item.rotation ?? 0,
+        radius: item.radius ?? 0,
         safetyDistance: item.safetyDistance ?? 0,
     };
 }

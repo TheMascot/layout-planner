@@ -1,11 +1,12 @@
 export interface Surface {
+  id: number;
   name: string;
   width: number;
   length: number;
 }
 
-export interface RectangleShape {
-  id: string;
+export interface Shape {
+  id: number;
   name: string;
 
   category: 'AIRCRAFT' | 'VEHICLE' | 'EQUIPMENT';
@@ -27,5 +28,3 @@ export interface Point {
   x: number;
   y: number;
 }
-
-export type Shape = RectangleShape;

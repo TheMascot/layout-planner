@@ -51,6 +51,8 @@ public class LayoutService {
         surfaceDetails.setLength(surface.getLength());
         surfaceDetails.setWidth(surface.getWidth());
         surfaceDetails.setPlacedObjects(placedObjectListItems);
+        surfaceDetails.setCreatedAt(surface.getCreatedAt());
+        surfaceDetails.setUpdatedAt(surface.getUpdatedAt());
         return surfaceDetails;
     }
 
@@ -62,6 +64,8 @@ public class LayoutService {
             dto.setName(s.getName());
             dto.setLength(s.getLength());
             dto.setWidth(s.getWidth());
+            dto.setCreatedAt(s.getCreatedAt());
+            dto.setUpdatedAt(s.getUpdatedAt());
             listSurfaces.add(dto);
         }
         return listSurfaces;

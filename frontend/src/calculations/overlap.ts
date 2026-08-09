@@ -68,8 +68,8 @@ function isOverlapping(a: Shape, b: Shape): boolean {
   return true; // No separating axis => overlap
 }
 
-export default function checkOverlapping(shapes: Shape[]): Set<string> {
-  const overlapping = new Set<string>();
+export default function checkOverlapping(shapes: Shape[]): Set<number> {
+  const overlapping = new Set<number>();
 
   for (let i = 0; i < shapes.length; i++) {
     for (let j = i + 1; j < shapes.length; j++) {

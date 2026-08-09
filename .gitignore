@@ -14,3 +14,6 @@ backend/target/
 frontend/node_modules/
 frontend/dist/
 frontend/dist-ssr/
+
+# Other
+planning.txt

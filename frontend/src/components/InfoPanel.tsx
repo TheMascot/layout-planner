@@ -7,7 +7,7 @@ interface Props {
     selectedShape: Shape | null;
     activeTool: ToolMode;
     annotationTool: AnnotationToolApi;
-    onRotationChange: (id: string, rotation: number) => void;
+    onRotationChange: (id: number, rotation: number) => void;
 }
 
 export default function InfoPanel({
@@ -59,7 +59,7 @@ export default function InfoPanel({
                 <b>Name:</b> {selectedShape.name}
               </span>
                             <span>
-                <b>Type:</b> {selectedShape.type}
+                <b>Type:</b> {selectedShape.geometryType}
               </span>
                             <span>
                 <b>Width:</b> {selectedShape.width} m

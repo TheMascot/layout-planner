@@ -1,10 +1,14 @@
 package com.mascot.layout_planner.dto.outgoing;
 
+import java.time.LocalDateTime;
+
 public class SurfaceListItem {
     private Long id;
     private String name;
     private Double width;
     private Double length;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public Long getId() {
         return id;
@@ -36,5 +40,21 @@ public class SurfaceListItem {
 
     public void setLength(Double length) {
         this.length = length;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

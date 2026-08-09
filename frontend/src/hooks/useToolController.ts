@@ -1,4 +1,3 @@
-// useToolController.ts
 import {useMemo} from 'react';
 import type {ToolMode} from '../types/tools';
 import {getMousePosition} from '../calculations/geometry';
@@ -14,7 +13,7 @@ interface Props {
         handlePointerUp: () => void;
         handleBackgroundClick: () => void;
         clearInteractions: () => void;
-        setDraggingId: React.Dispatch<React.SetStateAction<string | null>>;
+        setDraggingId: React.Dispatch<React.SetStateAction<number | null>>;
     };
     measureTool: {
         handleMeasureMove: (e: SvgEvt) => void;

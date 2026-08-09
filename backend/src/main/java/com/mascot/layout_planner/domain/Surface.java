@@ -2,6 +2,7 @@ package com.mascot.layout_planner.domain;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -18,8 +19,23 @@ public class Surface {
 
     private Double length;
 
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
     @OneToMany(mappedBy = "surface")
     private List<PlacedObject> placedObjects;
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+        updatedAt = createdAt;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     public Long getId() {
         return id;
@@ -51,5 +67,29 @@ public class Surface {
 
     public void setLength(Double length) {
         this.length = length;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public List<PlacedObject> getPlacedObjects() {
+        return placedObjects;
+    }
+
+    public void setPlacedObjects(List<PlacedObject> placedObjects) {
+        this.placedObjects = placedObjects;
     }
 }
