@@ -9,10 +9,7 @@ import type {Shape, Surface} from './types/shapes';
 import Canvas from './components/canvas_layers/Canvas';
 import {useAnnotationTool} from "./hooks/useAnnotationTool.ts";
 import {isShapeInsideSurface, normalizeDegree} from "./calculations/geometry.ts";
-import {fetchSurfaceDetails, fetchSurfaceList} from "./services/layout.service.ts"
-import {LoadLayout} from "./components/LoadLayout.tsx";
-
-const SURFACE_ID = 1;
+import {fetchSurfaceDetails} from "./services/layout.service.ts"
 
 function App() {
     const [searchParams] = useSearchParams();
@@ -30,12 +27,6 @@ function App() {
         gridSize: 1,
         snapToGrid: true,
     });
-
-    // const surfacesQuery = useQuery({
-    //     queryKey: ['surfaces'],
-    //     queryFn: fetchSurfaceList,
-    //     refetchOnWindowFocus: false,
-    // });
 
     const surfaceDetailsQuery = useQuery({
         queryKey: ['surfaceDetails', surfaceId],
@@ -97,11 +88,6 @@ function App() {
             }),
         );
     }
-
-    // function handleLoadSurface(surfaceId: number) {
-    //     setSelectedSurfaceId(surfaceId);
-    //     setShowLoadLayout(false);
-    // }
 
     return (
         <div style={{ height: '95vh', display: 'flex', flexDirection: 'column' }}>

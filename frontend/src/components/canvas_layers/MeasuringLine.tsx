@@ -1,4 +1,4 @@
-import calculateDistance from '../../calculations/CalculateDistance';
+import calculateDistance from '../../calculations/calculateDistance';
 import type { MeasuringData } from '../../types/measuringData';
 
 interface Props {

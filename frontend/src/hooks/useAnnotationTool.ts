@@ -2,7 +2,7 @@ import {useRef, useState} from "react";
 import type {LineAnnotation} from "../types/annotations.ts";
 import type {Point} from "../types/shapes.ts";
 import type {AnnotationToolApi} from "../types/annotationToolApi.ts";
-import calculateDistance from "../calculations/CalculateDistance.ts";
+import calculateDistance from "../calculations/calculateDistance.ts";
 
 type GestureState = 'idle' | 'pending' | 'drawing';
 

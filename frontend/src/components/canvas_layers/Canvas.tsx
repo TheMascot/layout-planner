@@ -15,7 +15,7 @@ import {useToolController} from "../../hooks/useToolController.ts";
 import type {AnnotationToolApi} from "../../types/annotationToolApi.ts";
 
 interface Props {
-    surface: Surface | null;
+    surface: Surface;
     selectedId: number | null;
     onSelect: (id: number | null) => void;
     zoom: number;
