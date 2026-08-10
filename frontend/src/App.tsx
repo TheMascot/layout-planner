@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import {useQuery} from '@tanstack/react-query'
+import { useSearchParams } from 'react-router';
 import TopBar from './components/TopBar';
 import InfoPanel from './components/InfoPanel';
 import type {VisualSettings} from './types/visualSettings';
@@ -14,30 +15,32 @@ import {LoadLayout} from "./components/LoadLayout.tsx";
 const SURFACE_ID = 1;
 
 function App() {
+    const [searchParams] = useSearchParams();
+    const surfaceId = searchParams.get('surfaceId');
     const [activeTool, setActiveTool] = useState<ToolMode>('select');
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [zoom, setZoom] = useState(5);
     const [surface, setSurface] = useState<Surface | null>(null);
     const [shapes, setShapes] = useState<Shape[]>([]);
     const annotationTool = useAnnotationTool();
-    const [selectedSurfaceId, setSelectedSurfaceId] = useState<number | null>(null);
-    const [showLoadLayout, setShowLoadLayout] = useState(true);
+    // const [selectedSurfaceId, setSelectedSurfaceId] = useState<number | null>(null);
+    // const [showLoadLayout, setShowLoadLayout] = useState(true);
     const [settings, setSettings] = useState<VisualSettings>({
         showGrid: true,
         gridSize: 1,
         snapToGrid: true,
     });
 
-    const surfacesQuery = useQuery({
-        queryKey: ['surfaces'],
-        queryFn: fetchSurfaceList,
-        refetchOnWindowFocus: false,
-    });
+    // const surfacesQuery = useQuery({
+    //     queryKey: ['surfaces'],
+    //     queryFn: fetchSurfaceList,
+    //     refetchOnWindowFocus: false,
+    // });
 
     const surfaceDetailsQuery = useQuery({
-        queryKey: ['surfaceDetails', selectedSurfaceId],
-        queryFn: () => fetchSurfaceDetails(selectedSurfaceId as number),
-        enabled: selectedSurfaceId !== null,
+        queryKey: ['surfaceDetails', surfaceId],
+        queryFn: () => fetchSurfaceDetails(Number(surfaceId)),
+        enabled: surfaceId !== null,
         refetchOnWindowFocus: false,
     });
 
@@ -45,6 +48,7 @@ function App() {
         if (surfaceDetailsQuery.data) {
             setSurface(surfaceDetailsQuery.data.surface)
             setShapes(surfaceDetailsQuery.data.shapes);
+            setSelectedId(null);
         }
     }, [surfaceDetailsQuery.data]);
 
@@ -89,24 +93,15 @@ function App() {
                         return s; // reject invalid manual angle
                     }
                 }
-
                 return candidate;
             }),
         );
     }
 
-    function handleLoadSurface(surfaceId: number) {
-        setSelectedSurfaceId(surfaceId);
-        setShowLoadLayout(false);
-    }
-
-    if (surfaceDetailsQuery.isLoading) {
-        return <div>Loading shapes...</div>;
-    }
-
-    if (surfaceDetailsQuery.isError) {
-        return <div>{error instanceof Error ? error.message : 'Failed to load shapes'}</div>;
-    }
+    // function handleLoadSurface(surfaceId: number) {
+    //     setSelectedSurfaceId(surfaceId);
+    //     setShowLoadLayout(false);
+    // }
 
     return (
         <div style={{ height: '95vh', display: 'flex', flexDirection: 'column' }}>
@@ -118,20 +113,14 @@ function App() {
                 activeTool={activeTool}
             />
 
-            {showLoadLayout ? (
-                surfacesQuery.isLoading ? (
-                    <div>Loading surfaces...</div>
-                ) : surfacesQuery.isError ? (
-                    <div>{surfacesQuery.error instanceof Error ? surfacesQuery.error.message : 'Failed to load surfaces'}</div>
-                ) : (
-                    <LoadLayout surfaces={surfacesQuery.data ?? []} onLoadSurface={handleLoadSurface} />
-                )
+            {surfaceId === null ? (
+                <div style={{ padding: 32 }}>No surface selected. Use Load Layout to open one.</div>
             ) : surfaceDetailsQuery.isLoading ? (
                 <div>Loading surface...</div>
             ) : surfaceDetailsQuery.isError ? (
                 <div>{surfaceDetailsQuery.error instanceof Error ? surfaceDetailsQuery.error.message : 'Failed to load surface'}</div>
             ) : surface === null ? (
-                <div>No selected surface to display</div>
+                <div>No surface to display</div>
             ) : (
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <div style={{ flex: 1 }}>
