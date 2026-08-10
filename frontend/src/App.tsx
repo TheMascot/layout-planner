@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 import {useQuery} from '@tanstack/react-query'
-import { useSearchParams } from 'react-router';
+import {useSearchParams} from 'react-router';
 import TopBar from './components/TopBar';
 import InfoPanel from './components/InfoPanel';
 import type {VisualSettings} from './types/visualSettings';
@@ -33,13 +33,15 @@ function App() {
         refetchOnWindowFocus: false,
     });
 
+    /* eslint-disable react-hooks/set-state-in-effect */
     useEffect(() => {
-        if (surfaceDetailsQuery.data) {
-            setSurface(surfaceDetailsQuery.data.surface);
-            setShapes(surfaceDetailsQuery.data.shapes);
-            setSelectedId(null);
-        }
+        if (!surfaceDetailsQuery.data) return;
+        setSurface(surfaceDetailsQuery.data.surface);
+        setShapes(surfaceDetailsQuery.data.shapes);
+        setSelectedId(null);
+
     }, [surfaceDetailsQuery.data]);
+    /* eslint-enable react-hooks/set-state-in-effect */
 
     const selectedShape = shapes.find((s) => s.id === selectedId) ?? null;
 
@@ -88,7 +90,7 @@ function App() {
     }
 
     return (
-        <div style={{ height: '95vh', display: 'flex', flexDirection: 'column' }}>
+        <div style={{height: '95vh', display: 'flex', flexDirection: 'column'}}>
             <TopBar
                 setZoom={setZoom}
                 onToggleGrid={handleToggleGrid}
@@ -98,7 +100,7 @@ function App() {
             />
 
             {surfaceId === null ? (
-                <div style={{ padding: 32 }}>No surface selected. Use Load Layout to open one.</div>
+                <div style={{padding: 32}}>No surface selected. Use Load Layout to open one.</div>
             ) : surfaceDetailsQuery.isLoading ? (
                 <div>Loading surface...</div>
             ) : surfaceDetailsQuery.isError ? (
@@ -106,8 +108,8 @@ function App() {
             ) : surface === null ? (
                 <div>No surface to display</div>
             ) : (
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ flex: 1 }}>
+                <div style={{flex: 1, display: 'flex', flexDirection: 'column'}}>
+                    <div style={{flex: 1}}>
                         <Canvas
                             settings={settings}
                             surface={surface}
