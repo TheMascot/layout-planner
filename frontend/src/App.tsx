@@ -20,8 +20,6 @@ function App() {
     const [surface, setSurface] = useState<Surface | null>(null);
     const [shapes, setShapes] = useState<Shape[]>([]);
     const annotationTool = useAnnotationTool();
-    // const [selectedSurfaceId, setSelectedSurfaceId] = useState<number | null>(null);
-    // const [showLoadLayout, setShowLoadLayout] = useState(true);
     const [settings, setSettings] = useState<VisualSettings>({
         showGrid: true,
         gridSize: 1,
@@ -37,7 +35,7 @@ function App() {
 
     useEffect(() => {
         if (surfaceDetailsQuery.data) {
-            setSurface(surfaceDetailsQuery.data.surface)
+            setSurface(surfaceDetailsQuery.data.surface);
             setShapes(surfaceDetailsQuery.data.shapes);
             setSelectedId(null);
         }

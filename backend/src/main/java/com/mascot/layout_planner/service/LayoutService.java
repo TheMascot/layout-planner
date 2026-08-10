@@ -2,6 +2,7 @@ package com.mascot.layout_planner.service;
 
 import com.mascot.layout_planner.domain.PlacedObject;
 import com.mascot.layout_planner.domain.Surface;
+import com.mascot.layout_planner.dto.incoming.SurfaceUpdateCommand;
 import com.mascot.layout_planner.dto.outgoing.PlacedObjectListItem;
 import com.mascot.layout_planner.dto.outgoing.SurfaceDetails;
 import com.mascot.layout_planner.dto.outgoing.SurfaceListItem;
@@ -41,6 +42,10 @@ public class LayoutService {
         List<PlacedObjectListItem> placedObjectListItems = this.mapPlacedObjectsToDto(placedObjects);
 
         return this.mapSurfaceToDto(surface, placedObjectListItems);
+
+    }
+
+    public void updateLayout(SurfaceUpdateCommand command) {
 
     }
 

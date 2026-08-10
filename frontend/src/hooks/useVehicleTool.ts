@@ -67,16 +67,16 @@ export function useVehicleTool({surface, setShapes, settings, activeTool, onSele
 
                 const candidate = {
                     ...s,
-                    posX: newX,
-                    posY: newY,
+                    positionX: newX,
+                    positionY: newY,
                 };
 
                 const bounded = clampShapePositionInsideSurface(candidate, surface);
 
                 return {
                     ...s,
-                    posX: bounded.posX,
-                    posY: bounded.posY,
+                    positionX: bounded.positionX,
+                    positionY: bounded.positionY,
                 };
             }),
         );
@@ -101,8 +101,8 @@ export function useVehicleTool({surface, setShapes, settings, activeTool, onSele
             setDraggingId(shape.id);
 
             setOffset({
-                x: mouse.x - shape.posX,
-                y: mouse.y - shape.posY,
+                x: mouse.x - shape.positionX,
+                y: mouse.y - shape.positionY,
             });
         }
     }

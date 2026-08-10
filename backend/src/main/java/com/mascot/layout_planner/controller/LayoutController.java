@@ -1,5 +1,6 @@
 package com.mascot.layout_planner.controller;
 
+import com.mascot.layout_planner.dto.incoming.SurfaceUpdateCommand;
 import com.mascot.layout_planner.dto.outgoing.PlacedObjectListItem;
 import com.mascot.layout_planner.dto.outgoing.SurfaceDetails;
 import com.mascot.layout_planner.dto.outgoing.SurfaceListItem;
@@ -8,10 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,8 +17,8 @@ import java.util.List;
 @RequestMapping("/api/v1/layout")
 public class LayoutController {
 
-   private final LayoutService layoutService;
-   private final Logger logger = LoggerFactory.getLogger(LayoutController.class);
+    private final LayoutService layoutService;
+    private final Logger logger = LoggerFactory.getLogger(LayoutController.class);
 
     public LayoutController(LayoutService layoutService) {
         this.layoutService = layoutService;
@@ -29,22 +27,27 @@ public class LayoutController {
     @GetMapping("/surfaces/{surfaceId}/placed-objects")
     public ResponseEntity<List<PlacedObjectListItem>> getPlacedObjects(
             @PathVariable("surfaceId") Long surfaceId
-    )
-    {
-     logger.info("*** GET REQUEST to placed objects on surface with id: {}", surfaceId);
-     return new ResponseEntity<>(this.layoutService.findAllPlacedObjectBySurfaceId(surfaceId), HttpStatus.OK);
+    ) {
+        logger.info("*** GET REQUEST to placed objects on surface with id: {}", surfaceId);
+        return new ResponseEntity<>(this.layoutService.findAllPlacedObjectBySurfaceId(surfaceId), HttpStatus.OK);
+    }
+
+    @PutMapping("/surfaces/{surfaceId}/")
+    public ResponseEntity<Void> updateLayout(SurfaceUpdateCommand command) {
+        logger.info("*** PUT REQUEST for updating layout of surface with id: {}", command.getId());
+        this.layoutService.updateLayout(command);
+        logger.info("Layout updated");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/surfaces")
-    public ResponseEntity<List<SurfaceListItem>> getAllSurfaces()
-    {
+    public ResponseEntity<List<SurfaceListItem>> getAllSurfaces() {
         logger.info("*** GET REQUEST for all surfaces");
         return new ResponseEntity<>(this.layoutService.findAllSurfaces(), HttpStatus.OK);
     }
 
     @GetMapping("/surfaces/{surfaceId}")
-    public ResponseEntity<SurfaceDetails> getSurfaceById(@PathVariable Long surfaceId)
-    {
+    public ResponseEntity<SurfaceDetails> getSurfaceById(@PathVariable Long surfaceId) {
         logger.info("*** GET REQUEST for surface with id: {}", surfaceId);
         return new ResponseEntity<>(this.layoutService.findSurfaceById(surfaceId), HttpStatus.OK);
     }

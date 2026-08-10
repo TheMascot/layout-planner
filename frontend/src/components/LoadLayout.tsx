@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 import type {SurfaceListItemModel} from "../models/surface-list-item.model.ts";
 import {formatTimestamp} from '../utils/dateTimeFormatter.ts'
-import type {Shape} from '../types/shapes.ts'
 import {fetchShapes} from "../services/layout.service.ts";
 
 interface LoadLayoutProps {

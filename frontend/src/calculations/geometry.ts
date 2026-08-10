@@ -28,15 +28,15 @@ export function clampShapePositionInsideSurface(shape: Shape, surface: Surface) 
   const extentX = Math.abs(cos) * halfW + Math.abs(sin) * halfH;
   const extentY = Math.abs(sin) * halfW + Math.abs(cos) * halfH;
 
-  let centerX = shape.posX + halfW;
-  let centerY = shape.posY + halfH;
+  let centerX = shape.positionX + halfW;
+  let centerY = shape.positionY + halfH;
 
   centerX = clamp(centerX, extentX, surface.width - extentX);
   centerY = clamp(centerY, extentY, surface.length - extentY);
 
   return {
-    posX: centerX - halfW,
-    posY: centerY - halfH,
+    positionX: centerX - halfW,
+    positionY: centerY - halfH,
   };
 }
 
@@ -50,8 +50,8 @@ export function normalizeDegree(value: number) {
 
 export function getShapeCenter(shape: Shape): Point {
   return {
-    x: shape.posX + shape.width / 2,
-    y: shape.posY + shape.length / 2,
+    x: shape.positionX + shape.width / 2,
+    y: shape.positionY + shape.length / 2,
   };
 }
 
@@ -77,10 +77,10 @@ export function getRotatedRectCorners(shape: Shape): Point[] {
   const center = getShapeCenter(shape);
 
   const corners: Point[] = [
-    { x: shape.posX, y: shape.posY },
-    { x: shape.posX + shape.width, y: shape.posY },
-    { x: shape.posX + shape.width, y: shape.posY + shape.length },
-    { x: shape.posX, y: shape.posY + shape.length },
+    { x: shape.positionX, y: shape.positionY },
+    { x: shape.positionX + shape.width, y: shape.positionY },
+    { x: shape.positionX + shape.width, y: shape.positionY + shape.length },
+    { x: shape.positionX, y: shape.positionY + shape.length },
   ];
 
   return corners.map((corner) => rotatePoint(corner, center, shape.rotation));

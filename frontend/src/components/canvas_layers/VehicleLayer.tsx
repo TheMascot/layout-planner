@@ -34,8 +34,8 @@ export function VehicleLayer({
                 return (
                     <g key={shape.id} transform={`rotate(${shape.rotation} ${centerX} ${centerY})`}>
                         <rect
-                            x={shape.posX}
-                            y={shape.posY}
+                            x={shape.positionX}
+                            y={shape.positionY}
                             width={shape.width}
                             height={shape.length}
                             fill={
@@ -55,8 +55,8 @@ export function VehicleLayer({
                         {isSelected && activeTool === 'select' && (
                             <>
                                 <rect
-                                    x={shape.posX}
-                                    y={shape.posY}
+                                    x={shape.positionX}
+                                    y={shape.positionY}
                                     width={shape.width}
                                     height={shape.length}
                                     fill="none"
@@ -67,26 +67,26 @@ export function VehicleLayer({
                                 />
                                 <line
                                     x1={centerX}
-                                    y1={shape.posY}
+                                    y1={shape.positionY}
                                     x2={centerX}
-                                    y2={shape.posY - ROTATE_HANDLE_OFFSET}
+                                    y2={shape.positionY - ROTATE_HANDLE_OFFSET}
                                     stroke="#111"
                                     strokeWidth={0.25}
                                     pointerEvents="none"
                                 />
                                 <circle
                                     cx={centerX}
-                                    cy={shape.posY - ROTATE_HANDLE_OFFSET}
+                                    cy={shape.positionY - ROTATE_HANDLE_OFFSET}
                                     r={ROTATE_HANDLE_RADIUS}
                                     fill="#fff"
                                     stroke="#111"
                                     strokeWidth={0.25}
-                                    style={{cursor: 'grab'}}
+                                    style={{cursor: 'alias'}}
                                     onPointerDown={(e) => handleRotatePointerDown(e, shape)}
                                 />
                                 <text
                                     x={centerX + 1.2}
-                                    y={shape.posY - ROTATE_HANDLE_OFFSET - 0.2}
+                                    y={shape.positionY - ROTATE_HANDLE_OFFSET - 0.2}
                                     fontSize={1.4}
                                     fill="#111"
                                     pointerEvents="none"

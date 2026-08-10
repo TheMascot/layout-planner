@@ -12,8 +12,8 @@ export interface Shape {
   category: 'AIRCRAFT' | 'VEHICLE' | 'EQUIPMENT';
   geometryType: 'RECTANGLE' | 'CIRCLE';
 
-  posX: number;
-  posY: number;
+  positionX: number;
+  positionY: number;
 
   width: number;
   length: number;

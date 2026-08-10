@@ -23,8 +23,8 @@ export default function SafetyZoneLayer({shapes}: Readonly<Props>) {
 
                     <g key={shape.id} transform={`rotate(${shape.rotation} ${centerX} ${centerY})`}>
                         <rect
-                            x={shape.posX - shape.safetyDistance}
-                            y={shape.posY - shape.safetyDistance}
+                            x={shape.positionX - shape.safetyDistance}
+                            y={shape.positionY - shape.safetyDistance}
                             rx={SAFETY_RADIUS}
                             ry={SAFETY_RADIUS}
                             width={shape.width + shape.safetyDistance * 2}
