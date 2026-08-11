@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import {useQuery} from '@tanstack/react-query'
+import {useMutation, useQuery} from '@tanstack/react-query'
 import {useSearchParams} from 'react-router';
 import TopBar from './components/TopBar';
 import InfoPanel from './components/InfoPanel';
@@ -9,7 +9,9 @@ import type {Shape, Surface} from './types/shapes';
 import Canvas from './components/canvas_layers/Canvas';
 import {useAnnotationTool} from "./hooks/useAnnotationTool.ts";
 import {isShapeInsideSurface, normalizeDegree} from "./calculations/geometry.ts";
-import {fetchSurfaceDetails} from "./services/layout.service.ts"
+import {fetchSurfaceDetails, updateLayout} from "./services/layout.service.ts"
+import type {LayoutUpdateModel} from "./models/layout-update.model.ts";
+import {surfaceDetailsMapper} from "./mappers/surface-details.mapper.ts";
 
 function App() {
     const [searchParams] = useSearchParams();
@@ -31,6 +33,17 @@ function App() {
         queryFn: () => fetchSurfaceDetails(Number(surfaceId)),
         enabled: surfaceId !== null,
         refetchOnWindowFocus: false,
+    });
+
+    const updateLayoutMutation = useMutation({
+        mutationFn: ({ surfaceId, layout }: { surfaceId: number; layout: LayoutUpdateModel }) =>
+            updateLayout(surfaceId, layout),
+        onSuccess: (saved) => {
+            const mapped = surfaceDetailsMapper(saved);
+            setSurface(mapped.surface);
+            setShapes(mapped.shapes);
+            setSelectedId(null);
+        },
     });
 
     /* eslint-disable react-hooks/set-state-in-effect */
@@ -89,6 +102,32 @@ function App() {
         );
     }
 
+    function handleSaveAll() {
+        if (!surface || surfaceId === null) return;
+
+        const layoutDto: LayoutUpdateModel = {
+            name: surface.name,
+            width: surface.width,
+            length: surface.length,
+            placedObjects: shapes.map((s) => ({
+                id: s.id, // or null/undefined for new objects
+                name: s.name,
+                category: s.category,
+                geometryType: s.geometryType,
+                positionX: s.positionX,
+                positionY: s.positionY,
+                rotation: s.rotation,
+                width: s.width,
+                length: s.length,
+                radius: s.radius,
+                safetyDistance: s.safetyDistance,
+                surfaceId: surface.id,
+            })),
+        };
+
+        updateLayoutMutation.mutate({ surfaceId: Number(surfaceId), layout: layoutDto });
+    }
+
     return (
         <div style={{height: '95vh', display: 'flex', flexDirection: 'column'}}>
             <TopBar
@@ -97,6 +136,7 @@ function App() {
                 onToggleSnap={handleToggleSnap}
                 onChangeActiveTool={handleChangeActiveTool}
                 activeTool={activeTool}
+                onSaveAll={handleSaveAll}
             />
 
             {surfaceId === null ? (

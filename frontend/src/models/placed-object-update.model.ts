@@ -1,5 +1,5 @@
 export type PlacedObjectUpdateModel = {
-    id: number;
+    id: number | null;
     name: string;
     category: 'AIRCRAFT' | 'VEHICLE' | 'EQUIPMENT';
     geometryType: 'RECTANGLE' | 'CIRCLE';
