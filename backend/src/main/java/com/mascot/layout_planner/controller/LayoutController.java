@@ -1,6 +1,6 @@
 package com.mascot.layout_planner.controller;
 
-import com.mascot.layout_planner.dto.incoming.SurfaceUpdateCommand;
+import com.mascot.layout_planner.dto.incoming.LayoutUpdateCommand;
 import com.mascot.layout_planner.dto.outgoing.PlacedObjectListItem;
 import com.mascot.layout_planner.dto.outgoing.SurfaceDetails;
 import com.mascot.layout_planner.dto.outgoing.SurfaceListItem;
@@ -32,12 +32,14 @@ public class LayoutController {
         return new ResponseEntity<>(this.layoutService.findAllPlacedObjectBySurfaceId(surfaceId), HttpStatus.OK);
     }
 
-    @PutMapping("/surfaces/{surfaceId}/")
-    public ResponseEntity<Void> updateLayout(SurfaceUpdateCommand command) {
-        logger.info("*** PUT REQUEST for updating layout of surface with id: {}", command.getId());
-        this.layoutService.updateLayout(command);
+    @PutMapping("/surfaces/{surfaceId}")
+    public ResponseEntity<SurfaceDetails> updateLayout(
+            @PathVariable Long surfaceId,
+            @RequestBody LayoutUpdateCommand command) {
+        logger.info("*** PUT REQUEST for updating layout of surface with id: {}", surfaceId);
+        SurfaceDetails updated = this.layoutService.updateLayout(surfaceId, command);
         logger.info("Layout updated");
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok(updated);
     }
 
     @GetMapping("/surfaces")

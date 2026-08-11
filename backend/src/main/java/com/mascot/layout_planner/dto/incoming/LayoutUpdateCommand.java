@@ -1,24 +1,13 @@
 package com.mascot.layout_planner.dto.incoming;
 
-import com.mascot.layout_planner.dto.outgoing.PlacedObjectListItem;
-
 import java.util.List;
 
-public class SurfaceUpdateCommand {
+public class LayoutUpdateCommand {
 
-    private Long id;
     private String name;
     private Double width;
     private Double length;
-    private List<PlacedObjectListItem> placedObjects;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private List<PlacedObjectUpdateCommand> placedObjects;
 
     public String getName() {
         return name;
@@ -44,11 +33,11 @@ public class SurfaceUpdateCommand {
         this.length = length;
     }
 
-    public List<PlacedObjectListItem> getPlacedObjects() {
+    public List<PlacedObjectUpdateCommand> getPlacedObjects() {
         return placedObjects;
     }
 
-    public void setPlacedObjects(List<PlacedObjectListItem> placedObjects) {
+    public void setPlacedObjects(List<PlacedObjectUpdateCommand> placedObjects) {
         this.placedObjects = placedObjects;
     }
 }

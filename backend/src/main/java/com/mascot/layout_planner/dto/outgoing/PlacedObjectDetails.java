@@ -1,50 +1,22 @@
-package com.mascot.layout_planner.domain;
+package com.mascot.layout_planner.dto.outgoing;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.NotNull;
+import com.mascot.layout_planner.domain.GeometryType;
+import com.mascot.layout_planner.domain.PlacedObjectCategory;
 
-@Entity
-@Table(name = "placed_objects")
-public class PlacedObject {
+public class PlacedObjectDetails {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotNull
     private String name;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
     private PlacedObjectCategory category;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
     private GeometryType geometryType;
-
-    @NotNull
-    @Column(name="position_x")
     private Double positionX;
-
-    @NotNull
-    @Column(name="position_y")
     private Double positionY;
-
     private Integer rotation;
-
     private Double width;
-
     private Double length;
-
     private Double radius;
-
     private Double safetyDistance;
-
-    @NotNull
-    @ManyToOne()
-    @JoinColumn(name="surface_id")
-    private Surface surface;
+    private Long surfaceId;
 
     public Long getId() {
         return id;
@@ -134,14 +106,11 @@ public class PlacedObject {
         this.safetyDistance = safetyDistance;
     }
 
-    public Surface getSurface() {
-        return surface;
+    public Long getSurfaceId() {
+        return surfaceId;
     }
 
-    public void setSurface(Surface surface) {
-        this.surface = surface;
-    }
-
-    public void add() {
+    public void setSurfaceId(Long surfaceId) {
+        this.surfaceId = surfaceId;
     }
 }
