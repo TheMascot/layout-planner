@@ -12,6 +12,12 @@ import {isShapeInsideSurface, normalizeDegree} from "./calculations/geometry.ts"
 import {fetchSurfaceDetails, updateLayout} from "./services/layout.service.ts"
 import type {LayoutUpdateModel} from "./models/layout-update.model.ts";
 import {surfaceDetailsMapper} from "./mappers/surface-details.mapper.ts";
+import type {InfoMessageKey} from "./types/infoMessageKey.ts";
+
+    const INFO_MESSAGE_TEXT: Record<InfoMessageKey, string> = {
+        invalidRotation: 'Invalid angle: this rotation would move the shape outside of the surface.',
+        unsavedChanges: 'You have unsaved changes on the layout.',
+    };
 
 function App() {
     const [searchParams] = useSearchParams();
@@ -22,11 +28,13 @@ function App() {
     const [surface, setSurface] = useState<Surface | null>(null);
     const [shapes, setShapes] = useState<Shape[]>([]);
     const annotationTool = useAnnotationTool();
+    const [activeMessages, setActiveMessages] = useState<Set<InfoMessageKey>>(new Set());
     const [settings, setSettings] = useState<VisualSettings>({
         showGrid: true,
         gridSize: 1,
         snapToGrid: true,
     });
+    const messages = [...activeMessages].map((k) => INFO_MESSAGE_TEXT[k]);
 
     const surfaceDetailsQuery = useQuery({
         queryKey: ['surfaceDetails', surfaceId],
@@ -52,6 +60,7 @@ function App() {
         setSurface(surfaceDetailsQuery.data.surface);
         setShapes(surfaceDetailsQuery.data.shapes);
         setSelectedId(null);
+        setActiveMessages(new Set())
 
     }, [surfaceDetailsQuery.data]);
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -83,23 +92,26 @@ function App() {
         });
     }
 
-    function handleUpdateShapeRotation(id: number, rotation: number) {
+    function handleUpdateShapeRotation(id: number, rotation: number):boolean {
+        const shape = shapes.find((s) => s.id === id);
+        if (!shape) return false;
+
         const normalized = normalizeDegree(rotation);
+        const candidate = { ...shape, rotation: normalized };
 
-        setShapes((prev) =>
-            prev.map((s) => {
-                if (s.id !== id) return s;
+        if (surface !== null && !isShapeInsideSurface(candidate, surface)) {
+            setActiveMessages((prev)=>{
+                const next = new Set(prev);
+                next.add('invalidRotation');
+                return next;
+            })
+            return false;
+        }
 
-                const candidate = {...s, rotation: normalized};
+        setActiveMessages(new Set());
+        setShapes((prev) => prev.map((s) => (s.id === id ? candidate : s)));
+        return true;
 
-                if (surface !== null) {
-                    if (!isShapeInsideSurface(candidate, surface)) {
-                        return s; // reject invalid manual angle
-                    }
-                }
-                return candidate;
-            }),
-        );
     }
 
     function handleSaveAll() {
@@ -129,7 +141,7 @@ function App() {
     }
 
     return (
-        <div style={{height: '95vh', display: 'flex', flexDirection: 'column'}}>
+        <div style={{height: '98vh', display: 'flex', flexDirection: 'column', margin: 0}}>
             <TopBar
                 setZoom={setZoom}
                 onToggleGrid={handleToggleGrid}
@@ -168,6 +180,7 @@ function App() {
                         activeTool={activeTool}
                         annotationTool={annotationTool}
                         onRotationChange={handleUpdateShapeRotation}
+                        messages={messages}
                     />
                 </div>
             )}

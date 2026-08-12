@@ -3,9 +3,7 @@ package com.mascot.layout_planner.service;
 import com.mascot.layout_planner.domain.PlacedObject;
 import com.mascot.layout_planner.domain.Surface;
 import com.mascot.layout_planner.dto.incoming.LayoutUpdateCommand;
-import com.mascot.layout_planner.dto.incoming.PlacedObjectCreateCommand;
 import com.mascot.layout_planner.dto.incoming.PlacedObjectUpdateCommand;
-import com.mascot.layout_planner.dto.outgoing.PlacedObjectDetails;
 import com.mascot.layout_planner.dto.outgoing.PlacedObjectListItem;
 import com.mascot.layout_planner.dto.outgoing.SurfaceDetails;
 import com.mascot.layout_planner.dto.outgoing.SurfaceListItem;
@@ -52,10 +50,10 @@ public class LayoutService {
         Surface surface = this.surfaceRepository.findById(surfaceId).orElseThrow(
                 () -> new RuntimeException("Surface with id " + surfaceId + " not found"));
 
-        // 1) Update surface fields
+        // Update surface field
         this.mapLayoutUpdateCommandToSurfaceEntity(surface, command);
 
-        // 2) Load current DB state for this surface
+        // Load current objects from DB for this surface
         List<PlacedObject> existingPlacedObjects = this.placedObjectRepository.findAllBySurface_Id(surfaceId);
 
         Map<Long, PlacedObject> existingById = new HashMap<>();
@@ -70,18 +68,18 @@ public class LayoutService {
         // Track incoming IDs (for duplicate check + delete detection)
         Set<Long> incomingIds = new HashSet<>();
 
-        // 3) Create or update
+        // Create or update
         for (PlacedObjectUpdateCommand incoming : incomingCommands) {
             if (incoming.getSurfaceId() != null && !incoming.getSurfaceId().equals(surfaceId)) {
                 throw new RuntimeException(
                         "Placed object surfaceId " + incoming.getSurfaceId() +
-                                " does not match path surfaceId " + surfaceId);
+                                " does not match url path surfaceId " + surfaceId);
             }
 
             Long placedObjectId = incoming.getId();
 
             if (placedObjectId == null) {
-                // Create new object
+                // Save new object to DB
                 PlacedObject created = new PlacedObject();
                 this.applyPlacedObjectUpdateCommandToEntity(incoming, created, surface);
                 this.placedObjectRepository.save(created);
@@ -98,12 +96,12 @@ public class LayoutService {
                         "Placed object with id " + placedObjectId + " not found on surface " + surfaceId);
             }
 
-            // Update existing object in-place (no extra query)
+            // Update existing object in-place
             this.applyPlacedObjectUpdateCommandToEntity(incoming, existing, surface);
             this.placedObjectRepository.save(existing);
         }
 
-        // 4) Delete objects that existed in DB but are not in incoming snapshot
+        // Delete objects that existed in DB but are not in incoming snapshot
         List<PlacedObject> toDelete = new ArrayList<>();
         for (PlacedObject existing : existingPlacedObjects) {
             if (!incomingIds.contains(existing.getId())) {
