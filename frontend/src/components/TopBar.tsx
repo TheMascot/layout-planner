@@ -33,9 +33,9 @@ export default function TopBar({
                 gap: 10,
             }}
         >
-            <button>New Shape</button>
+            <button onClick={()=> navigate('/create-object')}>New Object</button>
             <button>New Layout</button>
-            <button>Load Shape</button>
+            <button>Load Object</button>
             <button onClick={() => navigate('/load-layout')}>Load Layout</button>
             <button onClick={onSaveAll}>Save All</button>
             <button onClick={onToggleGrid}>Grid</button>

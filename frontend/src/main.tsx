@@ -4,6 +4,7 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {BrowserRouter, Route, Routes} from 'react-router'
 import App from './App.tsx';
 import {LoadLayoutPage} from './pages/LoadLayoutPage.tsx'
+import {CreateNewObjectPage} from "./pages/CreateNewObjectPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -14,6 +15,7 @@ createRoot(document.getElementById('root')!).render(
                 <Routes>
                     <Route path="/" element={<App/>}/>
                     <Route path="/load-layout" element={<LoadLayoutPage/>}/>
+                    <Route path="/create-object" element={<CreateNewObjectPage/>}/>
                 </Routes>
             </BrowserRouter>
         </QueryClientProvider>

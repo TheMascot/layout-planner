@@ -1,8 +1,8 @@
-import { useNavigate } from 'react-router';
-import { useQuery } from '@tanstack/react-query';
-import { Box, CircularProgress, Typography } from '@mui/material';
-import { LoadLayout } from '../components/LoadLayout.tsx';
-import { fetchSurfaceList } from '../services/layout.service.ts';
+import {useNavigate} from 'react-router';
+import {useQuery} from '@tanstack/react-query';
+import {Box, CircularProgress, Typography} from '@mui/material';
+import {LoadLayout} from '../components/LoadLayout.tsx';
+import {fetchSurfaceList} from '../services/layout.service.ts';
 
 export function LoadLayoutPage() {
     const navigate = useNavigate();
@@ -19,22 +19,22 @@ export function LoadLayoutPage() {
 
     if (isLoading) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
-        <CircularProgress />
-        </Box>
-    );
+            <Box sx={{display: 'flex', justifyContent: 'center', mt: 8}}>
+                <CircularProgress/>
+            </Box>
+        );
     }
     if (isError) {
         return (
-            <Typography color="error" sx={{ m: 4 }}>
+            <Typography color="error" sx={{m: 4}}>
                 {error instanceof Error ? error.message : 'Failed to load surfaces'}
             </Typography>
         );
     }
 
     return (
-        <Box sx={{ p: 4 }}>
-            <LoadLayout surfaces={surfaces ?? []} onLoadSurface={handleLoadSurface} />
+        <Box sx={{p: 4}}>
+            <LoadLayout surfaces={surfaces ?? []} onLoadSurface={handleLoadSurface}/>
         </Box>
     );
 }

@@ -65,7 +65,7 @@ export default function InfoPanel({
                 <b>Length:</b> {selectedShape.length} m
               </span>
                                 <span>
-                <b>Rotation:</b>
+                <b>Rotation: </b>
                                 <input
                                     key={`${selectedShape.id}-${Math.round(selectedShape.rotation)}`}
                                     ref={rotationInputRef}
