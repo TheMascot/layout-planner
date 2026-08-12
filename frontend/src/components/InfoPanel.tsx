@@ -20,6 +20,17 @@ export default function InfoPanel({
                                   }: Readonly<Props>) {
     const rotationInputRef = useRef<HTMLInputElement>(null);
 
+    const handleRotationInputWrap= ()=>
+    {
+        if (rotationInputRef.current !== null) {
+            if (rotationInputRef.current.value === '-1') {
+                rotationInputRef.current.value = '359';
+            }else if (rotationInputRef.current.value === '360') {
+                rotationInputRef.current.value = '0';
+            }
+        }
+    }
+
     const handleRotationInputConfirm = () => {
         if (!selectedShape || !rotationInputRef.current) return;
         const next = Number(rotationInputRef.current.value);
@@ -61,8 +72,9 @@ export default function InfoPanel({
                                     type="number"
                                     step={1}
                                     defaultValue={String(Math.round(selectedShape.rotation))}
+                                    onChange={handleRotationInputWrap}
                                     onBlur={handleRotationInputConfirm}
-                                    style={{width: 64}}
+                                    style={{width: 40, border: '1px solid #000'}}
                                 />
                                 deg
                             </span>
@@ -110,8 +122,10 @@ export default function InfoPanel({
                     </p>
                 )}
             </div>
-            <div>
-                <p style={{padding: 0, margin: 0}}>{messages ?? 'No messages'}</p>
+            <div style={{display: 'flex', flexDirection: 'column', gap: 4}}>
+                {messages.map((message) => (
+                    <div key={message}>{message}</div>
+                ))}
             </div>
         </>
     );

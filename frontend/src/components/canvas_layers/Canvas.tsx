@@ -25,6 +25,7 @@ interface Props {
     settings: VisualSettings;
     activeTool: ToolMode;
     annotationTool: AnnotationToolApi;
+    clearInvalidRotationMessage: () => void;
 }
 
 export default function Canvas({
@@ -37,9 +38,10 @@ export default function Canvas({
                                    setShapes,
                                    settings,
                                    activeTool,
-                                   annotationTool
+                                   annotationTool,
+                                   clearInvalidRotationMessage
                                }: Readonly<Props>) {
-    const vehicleTool = useVehicleTool({surface, setShapes, settings, activeTool, onSelect});
+    const vehicleTool = useVehicleTool({surface, setShapes, settings, activeTool, onSelect, clearInvalidRotationMessage});
     const measureTool = useMeasureTool(surface);
 
     const pointerHandlers = useToolController({
@@ -49,7 +51,7 @@ export default function Canvas({
         measureTool,
         annotationTool,
     });
-    let conflictIds: Set<number>;
+    const conflictIds: Set<number> = useMemo(() => checkOverlapping(shapes), [shapes]);
 
     function handleCanvasWheel(e: React.WheelEvent<SVGSVGElement>) {
         setZoom((z) => {
@@ -58,64 +60,62 @@ export default function Canvas({
         });
     }
 
-    conflictIds = useMemo(() => checkOverlapping(shapes), [shapes]);
-
     return (
-            <>
-                <div
+        <>
+            <div
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    overflow: 'auto',
+                    border: '1px solid black',
+                }}
+            >
+                <svg
+                    viewBox={`0 0 ${surface.width} ${surface.length}`}
                     style={{
-                        width: '100%',
-                        height: '100%',
-                        overflow: 'auto',
-                        border: '1px solid black',
+                        width: surface.width * zoom,
+                        height: surface.length * zoom,
+                        border: '1px solid red',
+                        cursor: activeTool !== 'select' ? 'crosshair' : 'auto',
+                        userSelect: 'none',
+                        WebkitUserSelect: 'none',
+                    }}
+                    onPointerMove={pointerHandlers.onPointerMove}
+                    onPointerDown={pointerHandlers.onPointerDown}
+                    onPointerLeave={pointerHandlers.onPointerLeave}
+                    onPointerUp={pointerHandlers.onPointerUp}
+                    onWheel={(e) => {
+                        handleCanvasWheel(e);
                     }}
                 >
-                    <svg
-                        viewBox={`0 0 ${surface.width} ${surface.length}`}
-                        style={{
-                            width: surface.width * zoom,
-                            height: surface.length * zoom,
-                            border: '1px solid red',
-                            cursor: activeTool !== 'select' ? 'crosshair' : 'auto',
-                            userSelect: 'none',
-                            WebkitUserSelect: 'none',
-                        }}
-                        onPointerMove={pointerHandlers.onPointerMove}
-                        onPointerDown={pointerHandlers.onPointerDown}
-                        onPointerLeave={pointerHandlers.onPointerLeave}
-                        onPointerUp={pointerHandlers.onPointerUp}
-                        onWheel={(e) => {
-                            handleCanvasWheel(e);
-                        }}
-                    >
-                        {/* Grid */}
-                        {settings.showGrid && <Grid surface={surface} gridSize={settings.gridSize}/>}
-                        {/* Current line */}
-                        {annotationTool.currentLine?.start &&
-                            <AnnotationLine currentLine={annotationTool.currentLine}/>}
-                        {/* Stored annotations*/}
-                        <Annotations
-                            annotations={annotationTool.annotations}
-                            annotationTool={annotationTool}
-                            activeTool={activeTool}
-                        />
-                        {/* Safety Zones */}
-                        <SafetyZoneLayer shapes={shapes}/>
-                        {/* Vehicles */}
-                        <VehicleLayer
-                            shapes={shapes}
-                            conflictIds={conflictIds}
-                            activeTool={activeTool}
-                            selectedId={selectedId}
-                            handleRotatePointerDown={vehicleTool.handleRotatePointerDown}
-                            handleVehiclePointerDown={vehicleTool.handleVehiclePointerDown}
-                        />
+                    {/* Grid */}
+                    {settings.showGrid && <Grid surface={surface} gridSize={settings.gridSize}/>}
+                    {/* Current line */}
+                    {annotationTool.currentLine?.start &&
+                        <AnnotationLine currentLine={annotationTool.currentLine}/>}
+                    {/* Stored annotations*/}
+                    <Annotations
+                        annotations={annotationTool.annotations}
+                        annotationTool={annotationTool}
+                        activeTool={activeTool}
+                    />
+                    {/* Safety Zones */}
+                    <SafetyZoneLayer shapes={shapes}/>
+                    {/* Vehicles */}
+                    <VehicleLayer
+                        shapes={shapes}
+                        conflictIds={conflictIds}
+                        activeTool={activeTool}
+                        selectedId={selectedId}
+                        handleRotatePointerDown={vehicleTool.handleRotatePointerDown}
+                        handleVehiclePointerDown={vehicleTool.handleVehiclePointerDown}
+                    />
 
-                        {/* Measuring line and text */}
-                        {activeTool === 'measure' && <MeasuringLine measuringData={measureTool.measuringData}/>}
-                    </svg>
-                </div>
-                <footer></footer>
-            </>
+                    {/* Measuring line and text */}
+                    {activeTool === 'measure' && <MeasuringLine measuringData={measureTool.measuringData}/>}
+                </svg>
+            </div>
+            <footer></footer>
+        </>
     );
 }

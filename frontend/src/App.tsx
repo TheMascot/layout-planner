@@ -27,6 +27,7 @@ function App() {
     const [zoom, setZoom] = useState(5);
     const [surface, setSurface] = useState<Surface | null>(null);
     const [shapes, setShapes] = useState<Shape[]>([]);
+    const [savedSnapshot, setSavedSnapshot] = useState('');
     const annotationTool = useAnnotationTool();
     const [activeMessages, setActiveMessages] = useState<Set<InfoMessageKey>>(new Set());
     const [settings, setSettings] = useState<VisualSettings>({
@@ -34,7 +35,6 @@ function App() {
         gridSize: 1,
         snapToGrid: true,
     });
-    const messages = [...activeMessages].map((k) => INFO_MESSAGE_TEXT[k]);
 
     const surfaceDetailsQuery = useQuery({
         queryKey: ['surfaceDetails', surfaceId],
@@ -51,21 +51,32 @@ function App() {
             setSurface(mapped.surface);
             setShapes(mapped.shapes);
             setSelectedId(null);
+            setSavedSnapshot(JSON.stringify(mapped));
         },
     });
 
     /* eslint-disable react-hooks/set-state-in-effect */
     useEffect(() => {
         if (!surfaceDetailsQuery.data) return;
-        setSurface(surfaceDetailsQuery.data.surface);
-        setShapes(surfaceDetailsQuery.data.shapes);
+
+        const { surface, shapes } = surfaceDetailsQuery.data;
+        setSurface(surface);
+        setShapes(shapes);
+
         setSelectedId(null);
         setActiveMessages(new Set())
 
+        setSavedSnapshot(JSON.stringify({ surface, shapes }));
     }, [surfaceDetailsQuery.data]);
     /* eslint-enable react-hooks/set-state-in-effect */
 
+    const currentSnapshot = JSON.stringify({ surface, shapes });
+    const isDirty = currentSnapshot !== savedSnapshot;
     const selectedShape = shapes.find((s) => s.id === selectedId) ?? null;
+    const messages = [
+        ...(activeMessages.has('invalidRotation') ? [INFO_MESSAGE_TEXT.invalidRotation] : []),
+        ...(isDirty ? [INFO_MESSAGE_TEXT.unsavedChanges] : []),
+    ];
 
     function handleToggleGrid() {
         setSettings((currentSettings) => ({
@@ -140,6 +151,14 @@ function App() {
         updateLayoutMutation.mutate({ surfaceId: Number(surfaceId), layout: layoutDto });
     }
 
+    function clearInvalidRotationMessage(){
+        setActiveMessages((prev)=>{
+            const next = new Set(prev);
+            next.delete('invalidRotation');
+            return next;
+        })
+    }
+
     return (
         <div style={{height: '98vh', display: 'flex', flexDirection: 'column', margin: 0}}>
             <TopBar
@@ -173,6 +192,7 @@ function App() {
                             zoom={zoom}
                             activeTool={activeTool}
                             annotationTool={annotationTool}
+                            clearInvalidRotationMessage={clearInvalidRotationMessage}
                         />
                     </div>
                     <InfoPanel

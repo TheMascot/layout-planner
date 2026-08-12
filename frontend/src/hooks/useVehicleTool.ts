@@ -17,10 +17,19 @@ interface Props {
     settings: VisualSettings;
     activeTool: ToolMode;
     onSelect: (id: number | null) => void;
+    clearInvalidRotationMessage: () => void;
+
 }
 
 
-export function useVehicleTool({surface, setShapes, settings, activeTool, onSelect}: Props) {
+export function useVehicleTool({
+                                   surface,
+                                   setShapes,
+                                   settings,
+                                   activeTool,
+                                   onSelect,
+                                   clearInvalidRotationMessage
+                               }: Props) {
     const [draggingId, setDraggingId] = useState<number | null>(null);
     const [offset, setOffset] = useState({x: 0, y: 0});
     const [rotatingId, setRotatingId] = useState<number | null>(null);
@@ -32,6 +41,7 @@ export function useVehicleTool({surface, setShapes, settings, activeTool, onSele
         const svg = e.currentTarget;
         const mouse = getMousePosition(svg, e, surface);
 
+        // ROTATING
         if (rotatingId) {
             setShapes((prev) =>
                 prev.map((s) => {
@@ -40,11 +50,11 @@ export function useVehicleTool({surface, setShapes, settings, activeTool, onSele
                     const pointerAngle = getAngleFromCenter(center, mouse);
                     const nextRotation = normalizeDegree(pointerAngle + rotationOffset);
 
-                    const candidate = { ...s, rotation: nextRotation };
+                    const candidate = {...s, rotation: nextRotation};
                     if (!isShapeInsideSurface(candidate, surface)) {
                         return s; // keep last valid rotation
                     }
-
+                    clearInvalidRotationMessage();
                     return candidate;
                 }),
             );
@@ -53,6 +63,7 @@ export function useVehicleTool({surface, setShapes, settings, activeTool, onSele
 
         if (!draggingId) return;
 
+        // DRAGGING
         setShapes((prev) =>
             prev.map((s) => {
                 if (s.id !== draggingId) return s;
@@ -87,7 +98,8 @@ export function useVehicleTool({surface, setShapes, settings, activeTool, onSele
     }
 
     function handleBackgroundClick() {
-            onSelect(null);
+        onSelect(null);
+        clearInvalidRotationMessage()
     }
 
     function handleVehiclePointerDown(e: React.PointerEvent<SVGRectElement>, shape: Shape) {
@@ -104,6 +116,7 @@ export function useVehicleTool({surface, setShapes, settings, activeTool, onSele
                 x: mouse.x - shape.positionX,
                 y: mouse.y - shape.positionY,
             });
+            clearInvalidRotationMessage();
         }
     }
 
