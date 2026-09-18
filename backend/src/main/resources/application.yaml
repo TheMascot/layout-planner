@@ -5,12 +5,17 @@ spring:
     password: test1234
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         show_sql: true
         format_sql: true
     generate-ddl: true
+  flyway:
+    enabled: false
+    locations: classpath:db/migration
+#    baseline-on-migrate: true
+
 logging:
   level:
     hu.progmasters: debug

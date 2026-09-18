@@ -1,13 +1,13 @@
 package com.mascot.layout_planner.dto.outgoing;
 
 import com.mascot.layout_planner.domain.GeometryType;
-import com.mascot.layout_planner.domain.PlacedObjectCategory;
+import com.mascot.layout_planner.domain.ObjectCategory;
 
 public class PlacedObjectDetails {
 
     private Long id;
     private String name;
-    private PlacedObjectCategory category;
+    private ObjectCategory category;
     private GeometryType geometryType;
     private Double positionX;
     private Double positionY;
@@ -34,11 +34,11 @@ public class PlacedObjectDetails {
         this.name = name;
     }
 
-    public PlacedObjectCategory getCategory() {
+    public ObjectCategory getCategory() {
         return category;
     }
 
-    public void setCategory(PlacedObjectCategory category) {
+    public void setCategory(ObjectCategory category) {
         this.category = category;
     }
 

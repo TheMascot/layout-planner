@@ -1,7 +1,7 @@
 package com.mascot.layout_planner.dto.incoming;
 
 import com.mascot.layout_planner.domain.GeometryType;
-import com.mascot.layout_planner.domain.PlacedObjectCategory;
+import com.mascot.layout_planner.domain.ObjectCategory;
 import jakarta.validation.constraints.NotNull;
 
 public class PlacedObjectCreateCommand {
@@ -10,7 +10,7 @@ public class PlacedObjectCreateCommand {
     private String name;
 
     @NotNull
-    private PlacedObjectCategory category;
+    private ObjectCategory category;
 
     @NotNull
     private GeometryType geometryType;
@@ -42,11 +42,11 @@ public class PlacedObjectCreateCommand {
         this.name = name;
     }
 
-    public PlacedObjectCategory getCategory() {
+    public ObjectCategory getCategory() {
         return category;
     }
 
-    public void setCategory(PlacedObjectCategory category) {
+    public void setCategory(ObjectCategory category) {
         this.category = category;
     }
 

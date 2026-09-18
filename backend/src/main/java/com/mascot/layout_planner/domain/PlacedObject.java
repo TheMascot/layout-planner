@@ -1,27 +1,37 @@
 package com.mascot.layout_planner.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "placed_objects")
 public class PlacedObject {
 
+    public PlacedObject() {
+        this.rotation = 0;
+    }
+
+    public PlacedObject(
+            ObjectTemplate objectTemplate,
+            Surface surface,
+            Double positionX,
+            Double positionY
+    ) {
+        this.objectTemplate = objectTemplate;
+        this.surface = surface;
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.rotation = 0;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
-    private String name;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private PlacedObjectCategory category;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private GeometryType geometryType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "object_template_id")
+    private ObjectTemplate objectTemplate;
 
     @NotNull
     @Column(name="position_x")
@@ -33,16 +43,10 @@ public class PlacedObject {
 
     private Integer rotation;
 
-    private Double width;
-
-    private Double length;
-
-    private Double radius;
-
     private Double safetyDistance;
 
     @NotNull
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="surface_id")
     private Surface surface;
 
@@ -50,32 +54,12 @@ public class PlacedObject {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public ObjectTemplate getObjectTemplate() {
+        return objectTemplate;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public PlacedObjectCategory getCategory() {
-        return category;
-    }
-
-    public void setCategory(PlacedObjectCategory category) {
-        this.category = category;
-    }
-
-    public GeometryType getGeometryType() {
-        return geometryType;
-    }
-
-    public void setGeometryType(GeometryType geometryType) {
-        this.geometryType = geometryType;
+    public void setObjectTemplate(ObjectTemplate objectTemplate) {
+        this.objectTemplate = objectTemplate;
     }
 
     public Double getPositionX() {
@@ -102,30 +86,6 @@ public class PlacedObject {
         this.rotation = rotation;
     }
 
-    public Double getWidth() {
-        return width;
-    }
-
-    public void setWidth(Double width) {
-        this.width = width;
-    }
-
-    public Double getLength() {
-        return length;
-    }
-
-    public void setLength(Double length) {
-        this.length = length;
-    }
-
-    public Double getRadius() {
-        return radius;
-    }
-
-    public void setRadius(Double radius) {
-        this.radius = radius;
-    }
-
     public Double getSafetyDistance() {
         return safetyDistance;
     }
@@ -142,6 +102,4 @@ public class PlacedObject {
         this.surface = surface;
     }
 
-    public void add() {
-    }
 }

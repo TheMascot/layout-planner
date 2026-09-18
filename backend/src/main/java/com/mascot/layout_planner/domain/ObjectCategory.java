@@ -1,9 +1,9 @@
 package com.mascot.layout_planner.domain;
 
-public enum PlacedObjectCategory {
+public enum ObjectCategory {
 
     AIRCRAFT,
     VEHICLE,
-    EQUIPMENT
+    ZONE
 
 }
