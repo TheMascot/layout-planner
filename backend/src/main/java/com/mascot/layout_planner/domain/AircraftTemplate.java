@@ -21,6 +21,11 @@ public class AircraftTemplate extends ObjectTemplate {
     @Column(name="height")
     private Double height;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name="aircraft_type")
+    private AircraftType aircraftType;
+
     public String getIcao() {
         return icao;
     }
@@ -35,5 +40,13 @@ public class AircraftTemplate extends ObjectTemplate {
 
     public void setHeight(Double height) {
         this.height = height;
+    }
+
+    public AircraftType getAircraftType() {
+        return aircraftType;
+    }
+
+    public void setAircraftType(AircraftType aircraftType) {
+        this.aircraftType = aircraftType;
     }
 }

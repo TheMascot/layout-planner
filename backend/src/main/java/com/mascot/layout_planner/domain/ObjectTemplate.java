@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 
 @Entity
+@Table(name="object_templates")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class ObjectTemplate {
 
