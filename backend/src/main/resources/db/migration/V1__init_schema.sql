@@ -8,16 +8,16 @@ CREATE TABLE aircraft_templates
 
 CREATE TABLE object_template
 (
-    id              BIGINT       NOT NULL,
-    name            VARCHAR(255) NOT NULL,
-    width           DOUBLE       NOT NULL,
-    length          DOUBLE       NOT NULL,
-    object_category VARCHAR(255) NOT NULL,
-    geometry_type   VARCHAR(255) NOT NULL,
-    created_by      BIGINT       NULL,
-    created_at      datetime(6)  NOT NULL,
-    updated_at      datetime(6)  NOT NULL,
-    is_deleted      BIT(1)       NOT NULL,
+    id              BIGINT AUTO_INCREMENT NOT NULL,
+    name            VARCHAR(255)          NOT NULL,
+    width           DOUBLE                NOT NULL,
+    length          DOUBLE                NOT NULL,
+    object_category VARCHAR(255)          NOT NULL,
+    geometry_type   VARCHAR(255)          NOT NULL,
+    created_by      BIGINT                NULL,
+    created_at      datetime(6)           NOT NULL,
+    updated_at      datetime(6)           NOT NULL,
+    is_deleted      BIT(1)                NOT NULL,
     CONSTRAINT pk_objecttemplate PRIMARY KEY (id)
 );
 

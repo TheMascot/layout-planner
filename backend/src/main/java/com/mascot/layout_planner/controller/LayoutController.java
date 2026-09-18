@@ -24,33 +24,33 @@ public class LayoutController {
         this.layoutService = layoutService;
     }
 
-    @GetMapping("/surfaces/{surfaceId}/placed-objects")
-    public ResponseEntity<List<PlacedObjectListItem>> getPlacedObjects(
-            @PathVariable("surfaceId") Long surfaceId
-    ) {
-        logger.info("*** GET REQUEST to placed objects on surface with id: {}", surfaceId);
-        return new ResponseEntity<>(this.layoutService.findAllPlacedObjectBySurfaceId(surfaceId), HttpStatus.OK);
-    }
-
-    @PutMapping("/surfaces/{surfaceId}")
-    public ResponseEntity<SurfaceDetails> updateLayout(
-            @PathVariable Long surfaceId,
-            @RequestBody LayoutUpdateCommand command) {
-        logger.info("*** PUT REQUEST for updating layout of surface with id: {}", surfaceId);
-        SurfaceDetails updated = this.layoutService.updateLayout(surfaceId, command);
-        logger.info("Layout updated");
-        return ResponseEntity.ok(updated);
-    }
-
-    @GetMapping("/surfaces")
-    public ResponseEntity<List<SurfaceListItem>> getAllSurfaces() {
-        logger.info("*** GET REQUEST for all surfaces");
-        return new ResponseEntity<>(this.layoutService.findAllSurfaces(), HttpStatus.OK);
-    }
-
-    @GetMapping("/surfaces/{surfaceId}")
-    public ResponseEntity<SurfaceDetails> getSurfaceById(@PathVariable Long surfaceId) {
-        logger.info("*** GET REQUEST for surface with id: {}", surfaceId);
-        return new ResponseEntity<>(this.layoutService.findSurfaceById(surfaceId), HttpStatus.OK);
-    }
+//    @GetMapping("/surfaces/{surfaceId}/placed-objects")
+//    public ResponseEntity<List<PlacedObjectListItem>> getPlacedObjects(
+//            @PathVariable("surfaceId") Long surfaceId
+//    ) {
+//        logger.info("*** GET REQUEST to placed objects on surface with id: {}", surfaceId);
+//        return new ResponseEntity<>(this.layoutService.findAllPlacedObjectBySurfaceId(surfaceId), HttpStatus.OK);
+//    }
+//
+//    @PutMapping("/surfaces/{surfaceId}")
+//    public ResponseEntity<SurfaceDetails> updateLayout(
+//            @PathVariable Long surfaceId,
+//            @RequestBody LayoutUpdateCommand command) {
+//        logger.info("*** PUT REQUEST for updating layout of surface with id: {}", surfaceId);
+//        SurfaceDetails updated = this.layoutService.updateLayout(surfaceId, command);
+//        logger.info("Layout updated");
+//        return ResponseEntity.ok(updated);
+//    }
+//
+//    @GetMapping("/surfaces")
+//    public ResponseEntity<List<SurfaceListItem>> getAllSurfaces() {
+//        logger.info("*** GET REQUEST for all surfaces");
+//        return new ResponseEntity<>(this.layoutService.findAllSurfaces(), HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/surfaces/{surfaceId}")
+//    public ResponseEntity<SurfaceDetails> getSurfaceById(@PathVariable Long surfaceId) {
+//        logger.info("*** GET REQUEST for surface with id: {}", surfaceId);
+//        return new ResponseEntity<>(this.layoutService.findSurfaceById(surfaceId), HttpStatus.OK);
+//    }
 }
